@@ -27,7 +27,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>start</string>
     </property>
    </widget>
    <widget class="QPlainTextEdit" name="plainTextEdit">
@@ -38,6 +38,9 @@
       <width>621</width>
       <height>111</height>
      </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
     </property>
     <property name="overwriteMode">
      <bool>true</bool>
@@ -93,6 +96,32 @@
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>520</y>
+      <width>181</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>PushButton</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="event_arrows">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>680</y>
+      <width>47</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
