@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/connect.png</file>
+        <file>debug/moc_mainwindow.cpp</file>
+        <file>debug/moc_predefs.h</file>
+        <file>images/disconnect.png</file>
+        <file>images/downOff.png</file>
+        <file>images/downOn.png</file>
+        <file>images/upOff.png</file>
+        <file>images/upOn.png</file>
+        <file>main.cpp</file>
+        <file>mainwindow.cpp</file>
+        <file>mainwindow.h</file>
+        <file>ui_mainwindow.h</file>
+    </qresource>
+</RCC>
