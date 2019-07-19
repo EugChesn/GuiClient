@@ -3,9 +3,16 @@
 TcpControl::TcpControl(quint16 port, QObject *parent) : QObject(parent)
 {
     server = new QTcpServer(this);
-    qDebug() << "server listen = " << server->listen(QHostAddress::Any, 7777);
+    qDebug() << "server listen = " << server->listen(QHostAddress::Any, port);
     connect(server, SIGNAL(newConnection()), this, SLOT(incommingConnection())); // подключаем сигнал "новое подключение" к нашему обработчику подключений
+    connect(server, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
 }
+
+TcpControl::~TcpControl() {
+    socket->deleteLater();
+    server->deleteLater();
+}
+
 
 void TcpControl::incommingConnection() // обработчик подключений
 {
@@ -21,17 +28,23 @@ void TcpControl::incommingConnection() // обработчик подключе�
 
 void TcpControl::readyRead(QString text)
 {
-    QTcpSocket * socket = (QTcpSocket*)sender();
     QByteArray arr = text.toUtf8();
     if (socket->state() == QTcpSocket::ConnectedState)
         socket->write(arr);
 }
-void TcpControl::stateChanged(QAbstractSocket::SocketState state) // обработчик статуса, нужен для контроля за "вещающим"
+QAbstractSocket::SocketState TcpControl::stateChanged(QAbstractSocket::SocketState state) // обработчик статуса, нужен для контроля за "вещающим"
 {
-    QTcpSocket * socket = (QTcpSocket*)sender();
-    if(socket == NULL) {
-        return;
+    if(socket == nullptr) {
+        return QAbstractSocket::SocketState::ClosingState;
     }
     this->state = state;
     qDebug() << state;
 }
+
+QAbstractSocket::SocketError TcpControl::onError(QAbstractSocket::SocketError error)
+{
+    qDebug() << "ERROR:" << error;
+    return error;
+}
+
+
