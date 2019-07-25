@@ -29,11 +29,13 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
+        opencvcam.cpp \
         tcpcontrol.cpp \
         udpstream.cpp
 
 HEADERS += \
         mainwindow.h \
+        opencvcam.h \
         tcpcontrol.h \
         udpstream.h
 
@@ -57,17 +59,16 @@ FORMS += \
 #    libopencv_videoio410d \
 
 
-#INCLUDEPATH += C:\opencv\opencv_bin\install\include
-#LIBS +=-L"C:\opencv\opencv_bin\install\x86\mingw\lib"
-#LIBS +=  \
-#-lopencv_core410 \
-#-lopencv_highgui410 \
-#-lopencv_imgproc410 \
-#-lopencv_photo410 \
-#-lopencv_imgcodecs410 \
-#-lopencv_video410 \
-#-lopencv_videoio410
-#    -
+INCLUDEPATH += C:\opencv\opencv\opencv-bin\install\include
+LIBS +=-L"C:\opencv\opencv\opencv-bin\install\x86\mingw\lib"
+LIBS +=  \
+-lopencv_core410 \
+-lopencv_highgui410 \
+-lopencv_imgproc410 \
+-lopencv_photo410 \
+-lopencv_imgcodecs410 \
+-lopencv_video410 \
+-lopencv_videoio410 \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

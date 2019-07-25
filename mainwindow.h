@@ -6,6 +6,8 @@
 #include <QGamepad>
 #include <QLabel>
 
+#include "opencvcam.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -18,6 +20,9 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     TcpControl* tcpControl;
     QGamepad *gamepad;
+    OpenCvCam *openCam;
+
+
     ~MainWindow();
 private slots:
     void on_pushButton_clicked();
@@ -30,6 +35,11 @@ private slots:
     void axisRightYChanged(double value);
 
     void on_stop_clicked();
+    void errorReadCam();
+
+    void setPixmapOnLabel(QPixmap);
+
+    void on_btnCamera_clicked();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

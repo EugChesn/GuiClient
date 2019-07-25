@@ -20,6 +20,16 @@ MainWindow::MainWindow(QWidget *parent) :
     gamepad = new QGamepad(deviceId, this);
     installEventFilter(this);
     upKey = downKey = rightKey = leftKey = false;
+
+    //openCam = new OpenCvCam(this);
+    openCam = OpenCvCam::getInstance();
+    connect(openCam,SIGNAL(errorCam()),this,SLOT(errorReadCam()));
+    connect(openCam,SIGNAL(getPixmap(QPixmap)),this,SLOT(setPixmapOnLabel(QPixmap)));
+}
+
+void MainWindow::setPixmapOnLabel(QPixmap p)
+{
+    ui->label_2->setPixmap(p);
 }
 
 MainWindow::~MainWindow()
@@ -238,3 +248,15 @@ void MainWindow::on_stop_clicked()
     }
 
 }
+
+void MainWindow::on_btnCamera_clicked()
+{
+    openCam->RunCam();
+}
+
+void MainWindow::errorReadCam()
+{
+    ui->plainTextEdit->appendPlainText("Camera problem, read frame error");
+    disconnect(openCam,SIGNAL(getPixmap(QPixmap)),this,SLOT(setPixmapOnLabel(QPixmap)));
+}
+
