@@ -6,5 +6,8 @@
         <file>images/downOn.png</file>
         <file>images/upOff.png</file>
         <file>images/upOn.png</file>
+        <file>images/Left.png</file>
+        <file>images/Right.png</file>
+        <file>images/red.png</file>
     </qresource>
 </RCC>

@@ -6,6 +6,7 @@
 
 QT       += core gui
 QT += network
+QT += gamepad
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -28,16 +29,44 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-        tcpcontrol.cpp
+        tcpcontrol.cpp \
+        udpstream.cpp
 
 HEADERS += \
         mainwindow.h \
-        tcpcontrol.h
+        tcpcontrol.h \
+        udpstream.h
 
 FORMS += \
         mainwindow.ui
-#INCLUDEPATH += C:\\OpenCV\opencv\\build\\include
-#LIBS += -LC:\\OpenCV\\lib\\Debug \
+
+#INCLUDEPATH += C:/opencv/opencv-bin/install/include
+#LIBS += -LC:\\opencv\\opencv-bin\\install\\x64\\mingw\\bin \
+#    libopencv_calib3d410d \
+#    libopencv_core410d \
+#    libopencv_dnn410d \
+#    libopencv_features2d410d \
+#    libopencv_flann410d \
+#    libopencv_imgcodecs410d \
+#    libopencv_imgproc410d \
+#    libopencv_ml410d \
+#    libopencv_objdetect410d \
+#    libopencv_photo410d \
+#    libopencv_stitching410d \
+#    libopencv_video410d \
+#    libopencv_videoio410d \
+
+
+#INCLUDEPATH += C:\opencv\opencv_bin\install\include
+#LIBS +=-L"C:\opencv\opencv_bin\install\x86\mingw\lib"
+#LIBS +=  \
+#-lopencv_core410 \
+#-lopencv_highgui410 \
+#-lopencv_imgproc410 \
+#-lopencv_photo410 \
+#-lopencv_imgcodecs410 \
+#-lopencv_video410 \
+#-lopencv_videoio410
 #    -
 
 # Default rules for deployment.

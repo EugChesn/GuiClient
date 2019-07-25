@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1280</width>
-    <height>799</height>
+    <height>836</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,9 +33,9 @@
    <widget class="QPlainTextEdit" name="plainTextEdit">
     <property name="geometry">
      <rect>
-      <x>650</x>
-      <y>560</y>
-      <width>621</width>
+      <x>870</x>
+      <y>670</y>
+      <width>351</width>
       <height>111</height>
      </rect>
     </property>
@@ -97,24 +97,24 @@
      </item>
     </layout>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="stop">
     <property name="geometry">
      <rect>
-      <x>330</x>
-      <y>520</y>
+      <x>280</x>
+      <y>530</y>
       <width>181</width>
       <height>81</height>
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>stop</string>
     </property>
    </widget>
    <widget class="QLabel" name="event_arrows">
     <property name="geometry">
      <rect>
-      <x>440</x>
-      <y>680</y>
+      <x>280</x>
+      <y>710</y>
       <width>47</width>
       <height>13</height>
      </rect>
@@ -122,6 +122,72 @@
     <property name="text">
      <string>TextLabel</string>
     </property>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>470</x>
+      <y>610</y>
+      <width>311</width>
+      <height>162</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="leftStick">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>150</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap resource="resurse.qrc">:/images/Left.png</pixmap>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="rightStick">
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>150</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="pixmap">
+        <pixmap resource="resurse.qrc">:/images/Right.png</pixmap>
+       </property>
+       <property name="scaledContents">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
