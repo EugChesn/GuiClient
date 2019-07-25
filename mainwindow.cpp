@@ -24,12 +24,12 @@ MainWindow::MainWindow(QWidget *parent) :
     //openCam = new OpenCvCam(this);
     openCam = OpenCvCam::getInstance();
     connect(openCam,SIGNAL(errorCam()),this,SLOT(errorReadCam()));
-    connect(openCam,SIGNAL(getPixmap(QPixmap)),this,SLOT(setPixmapOnLabel(QPixmap)));
+    connect(openCam,SIGNAL(getPixmap(QPixmap)),ui->label_2,SLOT(setPixmap(QPixmap)));
 }
 
 void MainWindow::setPixmapOnLabel(QPixmap p)
 {
-    ui->label_2->setPixmap(p);
+    //ui->label_2->setPixmap(p);
 }
 
 MainWindow::~MainWindow()
@@ -98,20 +98,36 @@ void MainWindow::axisRightYChanged(double value)
     redR->move((axisRightX*50)+75, (axisRightY*50)+75);
 }
 
+void MainWindow::onErrorTcpSocket(QString error)
+{
+    QString redText = "<span style=\" font-size:8pt; font-weight:600; color:#ff0000;\" >";
+    redText.append(error);
+    redText.append("</span>");
+    ui->plainTextEdit->appendHtml(redText);
+    ui->plainTextEdit->appendPlainText(" tcp" + QString::number(isTcpControlConnected) + QString::number(isTcpControlConnectedSignal));
+    ui->plainTextEdit->appendPlainText(" gamepad" + isGamepadConnectedSignal);
+
+    QTimer::singleShot(250, this, SLOT(on_pushButton_clicked()));
+}
 
 void MainWindow::startServer()
 {
     tcpControl = TcpControl::getInstance();
-    if(!tcpControl->state) {
-        tcpControl->connectToHost(QHostAddress::LocalHost, 7676);
+    if(!isTcpControlConnected) {
+        tcpControl->connectToHost();
         isTcpControlConnected = true;
+//        if(timer != nullptr && timer->isActive()) {
+//            disconnect(timer, SIGNAL(timeout()), this, SLOT(on_pushButton_clicked()));
+//            timer->stop();
+//        }
         ui->plainTextEdit->appendPlainText(" Server port: " + QString::number(tcpControl->port));
         if(!isTcpControlConnectedSignal){
             connect(tcpControl, SIGNAL(getLog(QString)), ui->plainTextEdit, SLOT(appendPlainText(QString)));
-            connect(tcpControl, SIGNAL(getError(QString)), ui->plainTextEdit, SLOT(appendPlainText(QString)));
+            connect(tcpControl, SIGNAL(getError(QString)), this, SLOT(onErrorTcpSocket(QString)));
             connect(tcpControl, SIGNAL(getState(bool)), this, SLOT(onChangeStateServer(bool)));
             isTcpControlConnectedSignal = true;
             onChangeStateServer(true);
+            tcpControl->sendCommandUsingTimer();
         }
     }
 
@@ -225,6 +241,13 @@ void MainWindow::updateKeys()
 
 void MainWindow::on_stop_clicked()
 {
+    stopGamepad();
+    stopSocket();
+
+}
+
+void MainWindow::stopGamepad()
+{
     if(isGamepadConnectedSignal) {
         ui->plainTextEdit->appendPlainText("Все отключенно!");
         disconnect(gamepad, SIGNAL(axisLeftXChanged(double)), this, SLOT(axisLeftXChanged(double)));
@@ -236,18 +259,22 @@ void MainWindow::on_stop_clicked()
         redR->setVisible(false);
         isGamepadConnectedSignal = false;
     }
+}
 
+void MainWindow::stopSocket()
+{
     if(isTcpControlConnectedSignal) {
+        tcpControl->disconnect = true;
         tcpControl->disconnectToHost();
         isTcpControlConnected = false;
+        onChangeStateServer(false);
         disconnect(tcpControl, SIGNAL(getLog(QString)), ui->plainTextEdit, SLOT(appendPlainText(QString)));
         disconnect(tcpControl, SIGNAL(getError(QString)), ui->plainTextEdit, SLOT(appendPlainText(QString)));
         disconnect(tcpControl, SIGNAL(getState(bool)), this, SLOT(onChangeStateServer(bool)));
-        onChangeStateServer(false);
         isTcpControlConnectedSignal = false;
     }
-
 }
+
 
 void MainWindow::on_btnCamera_clicked()
 {

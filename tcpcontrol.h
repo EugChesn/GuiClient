@@ -23,8 +23,11 @@ public:
     quint16 port;
     QHostAddress address = QHostAddress::LocalHost;
     bool state = false;
-    void connectToHost(QHostAddress address, quint16 port);
+
+    void connectToHost();
     void disconnectToHost();
+    void resetConnect();
+    bool disconnect;
 
     //destructor
     ~TcpControl();
@@ -64,9 +67,10 @@ private:
     TcpControl( const TcpControl& );
     TcpControl& operator=( TcpControl& );
     explicit TcpControl(quint16 port = 7676, QObject *parent = nullptr);
+    QTimer *timer;
 
     double axisLeftX=0, axisLeftY=0, axisRightX=0, axisRightY=0;
-    QString command = "lx:" + QString::number(int(axisLeftX*100)) + ",ly:" + QString::number(int(axisLeftY*100)) + ",rx:" + QString::number(int(axisRightX*100)) + ",ry:" + QString::number(int(axisRightY*100));
+    QString command = "lx:" + QString::number((axisLeftX*100)) + ",ly:" + QString::number((axisLeftY*100)) + ",rx:" + QString::number((axisRightX*100)) + ",ry:" + QString::number((axisRightY*100));
 
 
 };

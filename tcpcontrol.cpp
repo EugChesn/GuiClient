@@ -9,11 +9,15 @@ TcpControl* TcpControl::getInstance()
     return instance;
 }
 
-void TcpControl::connectToHost(QHostAddress address, quint16 port)
+void TcpControl::connectToHost()
 {
     socket->connectToHost(QHostAddress::LocalHost, port);
     state = true;
     emit getState(true);
+    emit getLog(" Socket connect to host");
+    disconnect = false;
+//    if(disconnect)
+//        disconnect = false;
 }
 
 void TcpControl::disconnectToHost()
@@ -21,10 +25,21 @@ void TcpControl::disconnectToHost()
     emit getState(false);
     state = false;
     socket->close();
+    disconnect = true;
+}
+
+void TcpControl::resetConnect()
+{
+//    if (!socket->reset()) {
+//        connectToHost();
+//        emit getLog(" Socket reset");
+//    }
+//    emit getLog(" Socket not reset");
 }
 
 void TcpControl::sendCommand(double axisLeftX, double axisLeftY, double axisRightX, double axisRightY)
 {
+
     this->axisLeftX = axisLeftX;
     this->axisLeftY = axisLeftY;
     this->axisRightX = axisRightX;
@@ -80,7 +95,7 @@ void TcpControl::readyRead()
 //    }
     emit getLog("Socket ready Read!");
     qDebug() << "Socket ready read";
-    socket->waitForReadyRead(1000);
+    //socket->waitForReadyRead(10000);
     QByteArray data = socket->readAll();
 
     qDebug() << data;
@@ -109,10 +124,15 @@ QAbstractSocket::SocketState TcpControl::stateChanged(QAbstractSocket::SocketSta
 
 QAbstractSocket::SocketError TcpControl::onError(QAbstractSocket::SocketError error)
 {
-    QString strErorr = " ERROR: " + error;
+    QString strErorr = "SOCKET ERROR: " + QVariant::fromValue(error).toString() + " dis: " +disconnect;
     qDebug() << strErorr;
-    emit getError(strErorr);
+    if(!disconnect){
+        emit getError(strErorr);
+        //disconnect = false;
+    }
     emit getState(false);
+//    if(!socket->reset())
+//        resetConnect();
     return error;
 }
 
@@ -120,13 +140,20 @@ void TcpControl::connected()
 {
     emit getState(true);
     state = true;
+    emit getLog(" Socket connected!");
 }
 
 void TcpControl::disconnected()
 {
     emit getState(false);
     state = false;
-    connectToHost(address, port);
+    if(!disconnect){
+         emit getError(" Socket disconnected!");
+        //disconnect = false;
+    }
+//    if(!this->disconnect) {
+//        connectToHost()
+//    }
 }
 
 void TcpControl::hostFound()
@@ -136,6 +163,10 @@ void TcpControl::hostFound()
 
 void TcpControl::sendCommandUsingTimer()
 {
-
+    if(timer != nullptr || !timer->isActive()) {
+        timer = new QTimer(this);
+        connect(timer, SIGNAL(timeout()), this, SLOT(sendCommand(double, double, double, double)));
+        timer->start(1000);
+    }
 }
 

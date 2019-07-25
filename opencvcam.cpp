@@ -54,7 +54,7 @@ void OpenCvCam::RunCam()
     }
     else
     {
-        timer->start(20);
+        timer->start(100);
     }
 }
 

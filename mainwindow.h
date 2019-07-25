@@ -26,22 +26,27 @@ public:
     ~MainWindow();
 private slots:
     void on_pushButton_clicked();
-    void onChangeStateServer(bool state);
-    void sendStickCommand();
+    void on_stop_clicked();
 
+
+
+    //для геймпада
+    void sendStickCommand();
     void axisLeftXChanged(double value);
     void axisLeftYChanged(double value);
     void axisRightXChanged(double value);
     void axisRightYChanged(double value);
 
-    void on_stop_clicked();
+    //для сокета
+    void onChangeStateServer(bool state);
+    void onErrorTcpSocket(QString string);
+
     void errorReadCam();
-
     void setPixmapOnLabel(QPixmap);
-
     void on_btnCamera_clicked();
 
 protected:
+    //для обработки клавиатуры
     bool eventFilter(QObject *obj, QEvent *event);
     void updateKeys();
 
@@ -56,6 +61,8 @@ private:
     void appendText(QString text);
     void paintStick();
     void startTimerForSendStickCommand();
+    void stopGamepad();
+    void stopSocket();
 
     QLabel *redL,*redR;
     bool upKey, downKey, rightKey, leftKey;
