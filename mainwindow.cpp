@@ -25,6 +25,9 @@ MainWindow::MainWindow(QWidget *parent) :
     openCam = OpenCvCam::getInstance();
     connect(openCam,SIGNAL(errorCam()),this,SLOT(errorReadCam()));
     connect(openCam,SIGNAL(getPixmap(QPixmap)),ui->label_2,SLOT(setPixmap(QPixmap)));
+
+
+
 }
 
 void MainWindow::setPixmapOnLabel(QPixmap p)
@@ -42,6 +45,18 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
+    QString nParameter = " -n";
+        QString pingCount = " 1"; //(int)
+        QString wParameter = " -w";
+        QString pingWaitTime = " 10"; //(ms)
+        QProcess * pingProcess = new QProcess(this);
+        int exitCode = 0;
+        QString strIpaddress = " 192.168.99.158";
+        pingProcess->start("ping" + strIpaddress + nParameter + pingCount + wParameter + pingWaitTime);
+        if (exitCode==0){
+            ui->plainTextEdit->appendPlainText(pingProcess->readAllStandardError());
+            ui->plainTextEdit->appendPlainText(pingProcess->readAllStandardOutput());
+        }
     startServer();
     startGamepad();
 }
@@ -63,7 +78,7 @@ void MainWindow::onChangeStateServer(bool state)
 
 void MainWindow::sendStickCommand()
 {
-    tcpControl->sendCommand(axisLeftX, axisLeftY, axisRightX, axisRightY);
+    tcpControl->setCommand(axisLeftX, axisLeftY, axisRightX, axisRightY);
 }
 
 void MainWindow::axisLeftXChanged(double value)

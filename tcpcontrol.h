@@ -36,13 +36,14 @@ public:
 signals:
     void getError(QString err);
     void getLog(QString log);
-    void getCommand(double axisLeftX, double axisLeftY, double axisRightX, double axisRightY);
+    void getCommand(double axisLeftX = 0, double axisLeftY = 0, double axisRightX = 0, double axisRightY = 0);
     void getState(bool state);
 
 
 
 public slots:
-    void sendCommand(/*Command command*/double axisLeftX, double axisLeftY, double axisRightX, double axisRightY);
+    void sendCommand(/*double axisLeftX, double axisLeftY, double axisRightX, double axisRightY*/);
+    void setCommand(double axisLeftX, double axisLeftY, double axisRightX, double axisRightY);
     //void incommingConnection(); // обработчик входящего подключения
     void readyRead(); // обработчик входящих данных
     QAbstractSocket::SocketState stateChanged(QAbstractSocket::SocketState state); // обработчик изменения состояния вещающего
@@ -69,10 +70,8 @@ private:
     explicit TcpControl(quint16 port = 7676, QObject *parent = nullptr);
     QTimer *timer;
 
-    double axisLeftX=0, axisLeftY=0, axisRightX=0, axisRightY=0;
-    QString command = "lx:" + QString::number((axisLeftX*100)) + ",ly:" + QString::number((axisLeftY*100)) + ",rx:" + QString::number((axisRightX*100)) + ",ry:" + QString::number((axisRightY*100));
-
-
+    QByteArray intToArray(quint32 source);
+    std::atomic_int axisLeftX, axisLeftY, axisRightX, axisRightY;
 };
 
 #endif // TCPCONTROL_H
