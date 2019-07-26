@@ -27,6 +27,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+        dialog.cpp \
         main.cpp \
         mainwindow.cpp \
         opencvcam.cpp \
@@ -34,12 +35,14 @@ SOURCES += \
         udpstream.cpp
 
 HEADERS += \
+        dialog.h \
         mainwindow.h \
         opencvcam.h \
         tcpcontrol.h \
         udpstream.h
 
 FORMS += \
+        dialog.ui \
         mainwindow.ui
 
 #INCLUDEPATH += C:/opencv/opencv-bin/install/include
@@ -58,9 +61,8 @@ FORMS += \
 #    libopencv_video410d \
 #    libopencv_videoio410d \
 
-
-INCLUDEPATH += C:\opencv\opencv\opencv-bin\install\include
-LIBS +=-L"C:\opencv\opencv\opencv-bin\install\x86\mingw\lib"
+INCLUDEPATH += C:/OpenCv/opencv/opencv_bin/install/include/
+LIBS +=-L"C:/OpenCv/opencv/opencv_bin/install/x86/mingw/lib/"
 LIBS +=  \
 -lopencv_core410 \
 -lopencv_highgui410 \
@@ -68,7 +70,7 @@ LIBS +=  \
 -lopencv_photo410 \
 -lopencv_imgcodecs410 \
 -lopencv_video410 \
--lopencv_videoio410 \
+-lopencv_videoio410
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

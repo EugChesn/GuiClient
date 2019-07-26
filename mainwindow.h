@@ -6,6 +6,7 @@
 #include <QGamepad>
 #include <QLabel>
 
+#include "dialog.h"
 #include "opencvcam.h"
 
 namespace Ui {
@@ -20,14 +21,13 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     TcpControl* tcpControl;
     QGamepad *gamepad;
-    OpenCvCam *openCam;
+    //OpenCvCam *openCam;
 
 
     ~MainWindow();
 private slots:
     void on_pushButton_clicked();
     void on_stop_clicked();
-
 
 
     //для геймпада
@@ -41,9 +41,12 @@ private slots:
     void onChangeStateServer(bool state);
     void onErrorTcpSocket(QString string);
 
-    void errorReadCam();
-    void setPixmapOnLabel(QPixmap);
-    void on_btnCamera_clicked();
+
+    //void errorReadCam();
+    //void setPixmapOnLabel(QPixmap);
+    //void on_btnCamera_clicked();
+
+    void on_startCam_clicked();
 
 protected:
     //для обработки клавиатуры
