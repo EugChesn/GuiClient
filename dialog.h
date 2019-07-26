@@ -5,6 +5,7 @@
 #include <QCloseEvent>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
+#include <QProcess>
 
 namespace Ui {
 class Dialog;
@@ -23,12 +24,20 @@ protected:
 private:
     Ui::Dialog *ui;
     cv::VideoCapture cam;
+    double dWidth;
+    double dHeight;
+    double fps;
     cv::Mat matOriginal;
     QImage qimgOriginal;
+
+    QProcess *ping;
+
     QTimer * timer;
     const std::string videoStreamAddress = "rtsp://admin:123456@192.168.1.13:554";
+
 public slots:
     void processFrameAndUpdateGui();
+    void print_ping();
 private slots:
     void on_pushButton_clicked();
 };
