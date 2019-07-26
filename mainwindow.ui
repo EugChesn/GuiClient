@@ -189,17 +189,17 @@
      </item>
     </layout>
    </widget>
-   <widget class="QPushButton" name="btnCamera">
+   <widget class="QPushButton" name="startCam">
     <property name="geometry">
      <rect>
-      <x>850</x>
-      <y>510</y>
-      <width>231</width>
-      <height>71</height>
+      <x>910</x>
+      <y>550</y>
+      <width>151</width>
+      <height>51</height>
      </rect>
     </property>
     <property name="text">
-     <string>StartCamera</string>
+     <string>Start Camera</string>
     </property>
    </widget>
   </widget>

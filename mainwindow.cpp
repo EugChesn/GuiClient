@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
 #include "QtNetwork"
 
 #include <QPainter>
@@ -21,15 +22,13 @@ MainWindow::MainWindow(QWidget *parent) :
     installEventFilter(this);
     upKey = downKey = rightKey = leftKey = false;
 
-    //openCam = new OpenCvCam(this);
-    openCam = OpenCvCam::getInstance();
-    connect(openCam,SIGNAL(errorCam()),this,SLOT(errorReadCam()));
-    connect(openCam,SIGNAL(getPixmap(QPixmap)),ui->label_2,SLOT(setPixmap(QPixmap)));
-}
 
-void MainWindow::setPixmapOnLabel(QPixmap p)
-{
-    //ui->label_2->setPixmap(p);
+
+    //Camera
+    //openCam = new OpenCvCam(this);
+    //openCam = OpenCvCam::getInstance();
+    //connect(openCam,SIGNAL(errorCam()),this,SLOT(errorReadCam()));
+    //connect(openCam,SIGNAL(getPixmap(QPixmap)),ui->label_2,SLOT(setPixmap(QPixmap)));
 }
 
 MainWindow::~MainWindow()
@@ -274,16 +273,9 @@ void MainWindow::stopSocket()
         isTcpControlConnectedSignal = false;
     }
 }
-
-
-void MainWindow::on_btnCamera_clicked()
+void MainWindow::on_startCam_clicked()
 {
-    openCam->RunCam();
+    Dialog *mDialog = new Dialog(this);
+    mDialog->show();
+    //windowCam = new WindowCam(this);
 }
-
-void MainWindow::errorReadCam()
-{
-    ui->plainTextEdit->appendPlainText("Camera problem, read frame error");
-    disconnect(openCam,SIGNAL(getPixmap(QPixmap)),this,SLOT(setPixmapOnLabel(QPixmap)));
-}
-
