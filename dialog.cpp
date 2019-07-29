@@ -14,23 +14,24 @@ Dialog::Dialog(QWidget *parent) :
     ui->setupUi(this);
     //parentWidget()->hide();
 
-        timer = new QTimer(this);
-        connect(timer,SIGNAL(timeout()),this,SLOT(processFrameAndUpdateGui()));
+    timer = new QTimer(this);
+    connect(timer,SIGNAL(timeout()),this,SLOT(processFrameAndUpdateGui()));
 
+    timer_image = new QTimer(this);
+    connect(timer_image,SIGNAL(timeout()),this,SLOT(status_image()));
+    timer_image->start(1000);
 
-        /*QString nParameter = "-n";
-        QString pingCount = "1"; //(int)
-        QString wParameter = "-w";
-        QString pingWaitTime = "10"; //(ms)
-        QProcess *pingProcess = new QProcess;
-        int exitCode = pingProcess->execute("ping",QStringList()<<"vk.net"<<nParameter<<pingCount<<wParameter<<pingWaitTime);
-        if (exitCode==0){
+    pixOn = new QPixmap(":/images/pingON.png");
+    pixOff = new QPixmap(":/images/pingOFF.png");
 
-           //qDebug()<<"TEst";
-        }*/
-        //connect(ping, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping()) );
+    ping = new QProcess ();
+    count_signal_ping = 0;
+    connect(ping, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping()) );
+    connect(ping,SIGNAL(finished(int)),ping,SLOT(kill()));
 
-        ui->plainTextEdit->appendPlainText("Push button and wait for ping camera before open camera");
+    timer_ping = new QTimer(this);
+    connect(timer_ping,SIGNAL(timeout()),this,SLOT(ping_timer()));
+    timer_ping->start(2000);
 }
 
 Dialog::~Dialog()
@@ -70,10 +71,61 @@ void Dialog::processFrameAndUpdateGui()
     int h = ui->label->height();
     ui->label->setPixmap(QPixmap::fromImage(qimgOriginal).scaled(w,h,Qt::KeepAspectRatio));
 }
+
+void Dialog::print_ping()
+{
+    /*QByteArray      output;
+    output = ping->readAllStandardOutput();
+    QString res = QTextCodec::codecForName("IBM866")->toUnicode(output);*/
+
+    count_signal_ping++;
+    qDebug()<<count_signal_ping;
+    if(count_signal_ping % 2 == 0)
+    {
+        QString res = ping->readAllStandardOutput();
+        int percent = res.mid(res.indexOf('('), res.indexOf(')')).section('%', 0, 0).remove('(').toInt();
+        qDebug()<<percent;
+        if (percent > 50)
+        {
+            //ui->plainTextEdit->appendPlainText("Not found");
+            flag_ping_cam = false;
+            timer->stop();
+        }
+        else //!ui->plainTextEdit->toPlainText().contains("Found")
+        {
+            //ui->plainTextEdit->appendPlainText("Found");
+            flag_ping_cam = true;
+            timer->start(20);
+        }
+    }
+}
+
+void Dialog::status_image()
+{
+    if(flag_ping_cam)
+    {
+        ui->label_2->setPixmap(*pixOn);
+    }
+    else {
+        ui->label_2->setPixmap(*pixOff);
+    }
+}
+
+void Dialog::ping_timer()
+{
+    if(!ping->state() == QProcess::Starting)
+        ping->start("ping", QStringList() << "192.168.1.13"<<"-n"<<"1");
+}
+
+void Dialog::finished()
+{
+
+}
 void Dialog::on_pushButton_clicked()
 {
-    if(check_ping())
+    if(flag_ping_cam)
     {
+        ui->plainTextEdit->appendPlainText("Host cam found");
         if(!cam.isOpened())
         {
             if(!cam.open(videoStreamAddress)) {

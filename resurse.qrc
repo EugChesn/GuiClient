@@ -9,5 +9,7 @@
         <file>images/Left.png</file>
         <file>images/Right.png</file>
         <file>images/red.png</file>
+        <file>images/pingOFF.png</file>
+        <file>images/pingON.png</file>
     </qresource>
 </RCC>
