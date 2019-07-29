@@ -80,7 +80,7 @@ TcpControl::TcpControl(QObject *parent) : QObject(parent)
 
 QByteArray TcpControl::intToArray(quint32 source)
 {
-    QByteArray temp;
+   QByteArray temp;
    QDataStream data(&temp, QIODevice::ReadWrite);
    data << source;
    return temp;
