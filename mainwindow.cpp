@@ -8,6 +8,7 @@
 #include <QGamepad>
 #include <QGamepadManager>
 #include <QMessageBox>
+#include <QThread>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -270,9 +271,12 @@ void MainWindow::stopSocket()
 
 void MainWindow::on_startCam_clicked()
 {
+    /*QThread * start_dialog = new QThread;
+    Dialog *mDialog = new Dialog(this);
+    mDialog->moveToThread(start_dialog);*/
+
     Dialog *mDialog = new Dialog(this);
     mDialog->show();
-    //windowCam = new WindowCam(this);
 }
 
 void MainWindow::on_setings_clicked()
