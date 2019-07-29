@@ -34,10 +34,11 @@ private:
 
     QTimer * timer;
     const std::string videoStreamAddress = "rtsp://admin:123456@192.168.1.13:554";
-
+public:
+    bool check_ping();
 public slots:
     void processFrameAndUpdateGui();
-    void print_ping();
+    //void print_ping();
 private slots:
     void on_pushButton_clicked();
 };

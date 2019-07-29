@@ -4,6 +4,7 @@
 //#include <QProcess>
 #include <QTextCodec>
 #include <QDebug>
+#include <QThread>
 
 //using namespace  cv;
 Dialog::Dialog(QWidget *parent) :
@@ -27,10 +28,9 @@ Dialog::Dialog(QWidget *parent) :
 
            //qDebug()<<"TEst";
         }*/
-        ping = new QProcess ();
-        ping->start("ping", QStringList() << "yandex.ru"  );
-        connect(ping, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping()) );
+        //connect(ping, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping()) );
 
+        ui->plainTextEdit->appendPlainText("Push button and wait for ping camera before open camera");
 }
 
 Dialog::~Dialog()
@@ -43,58 +43,74 @@ void Dialog::closeEvent(QCloseEvent *)
     parentWidget()->show();
 }
 
+bool Dialog::check_ping()
+{
+    ping = new QProcess ();
+    ping->start("ping", QStringList() << "192.168.1.13"<<"-n"<<"1");
+
+    if(ping->waitForFinished())
+    {
+        QByteArray      output;
+        output = ping->readAllStandardOutput();
+        QString res = QTextCodec::codecForName("IBM866")->toUnicode(output);
+
+        const int percent = res.mid(res.indexOf('('), res.indexOf(')')).section('%', 0, 0).remove('(').toInt();
+        if (percent > 50)return false;
+        else return true;
+    }
+}
+
 void Dialog::processFrameAndUpdateGui()
 {
     cam.read(matOriginal);
     if(matOriginal.empty() == true) return;
     qimgOriginal = QImage(matOriginal.data, matOriginal.cols, matOriginal.rows, QImage::Format_RGB888).rgbSwapped();
-    ui->label->setPixmap(QPixmap::fromImage(qimgOriginal));
+
+    int w = ui->label->width();
+    int h = ui->label->height();
+    ui->label->setPixmap(QPixmap::fromImage(qimgOriginal).scaled(w,h,Qt::KeepAspectRatio));
 }
-
-void Dialog::print_ping()
-{
-    QByteArray      output;
-    output = ping->readAllStandardOutput();
-    int s = ping->state();
-    QString res = QTextCodec::codecForName("IBM866")->toUnicode(output);
-    ui->plainTextEdit->appendPlainText(res + QString::number(s));
-
-}
-
 void Dialog::on_pushButton_clicked()
 {
-    if(!cam.isOpened())
+    if(check_ping())
     {
-        if(!cam.open(videoStreamAddress)) {
-             ui->plainTextEdit->appendPlainText("Error cam is not accessed successfully");
-             return;
+        if(!cam.isOpened())
+        {
+            if(!cam.open(videoStreamAddress)) {
+                 ui->plainTextEdit->appendPlainText("Error cam is not accessed successfully");
+                 return;
+            }
+            else {
+                 timer->start(10);
+                 dWidth = cam.get(cv::CAP_PROP_FRAME_WIDTH); //задаем ширину
+                 dHeight = cam.get(cv::CAP_PROP_FRAME_HEIGHT); //задаем высоту
+                 fps = cam.get(cv::CAP_PROP_FPS);
+
+                 //ui->label->setGeometry(800,600,800,600);
+
+                 ui->plainTextEdit->appendPlainText("Width: " + QString::number(dWidth));
+                 ui->plainTextEdit->appendPlainText("Height: " + QString::number(dHeight));
+                 ui->plainTextEdit->appendPlainText("FPS: " + QString::number(fps));
+                 ui->plainTextEdit->appendPlainText("Complete:))");
+            }
         }
         else {
-             timer->start(10);
-             dWidth = cam.get(cv::CAP_PROP_FRAME_WIDTH); //задаем ширину
-             dHeight = cam.get(cv::CAP_PROP_FRAME_HEIGHT); //задаем высоту
-             fps = cam.get(cv::CAP_PROP_FPS);
-
-             //ui->label->setGeometry(800,600,800,600);
-
-             ui->plainTextEdit->appendPlainText("Width: " + QString::number(dWidth));
-             ui->plainTextEdit->appendPlainText("Height: " + QString::number(dHeight));
-             ui->plainTextEdit->appendPlainText("FPS: " + QString::number(fps));
-             ui->plainTextEdit->appendPlainText("Complete:))");
+            if(timer->isActive() == true)
+            {
+                timer->stop();
+                ui->pushButton->setText("Resume");
+                ui->plainTextEdit->appendPlainText("Stop:))");
+            }
+            else
+            {
+                timer->start(10);
+                ui->pushButton->setText("Stop");
+                ui->plainTextEdit->appendPlainText("Start:))");
+            }
         }
     }
-    else {
-        if(timer->isActive() == true)
-        {
-            timer->stop();
-            ui->pushButton->setText("Resume");
-            ui->plainTextEdit->appendPlainText("Stop:))");
-        }
-        else
-        {
-            timer->start(10);
-            ui->pushButton->setText("Stop");
-            ui->plainTextEdit->appendPlainText("Start:))");
-        }
+    else
+    {
+        ui->plainTextEdit->appendPlainText("Host cam not found");
     }
 }
