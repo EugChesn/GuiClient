@@ -8,8 +8,9 @@ class SettingConst
 public:
     static SettingConst *getInstance();
 
+    QString getAllToString();
     void saveSettingToFile();
-    void createSettingFile();
+    void readSettingFromFile();
 
     void setIpConrol(QString ip);
     void setPortConrol(quint16 port);
@@ -17,9 +18,15 @@ public:
 
     void setIpCamera1(QString ip);
     void setPortCamera1(quint16 port);
+    void setLoginIpCamera1(QString login);
+    void setPasswordIpcamera1(QString password);
 
     void setIpCamera2(QString ip);
     void setPortCamera2(quint16 port);
+    void setLoginIpCamera2(QString login);
+    void setPasswordIpcamera2(QString password);
+
+    void setFrameMS(int frameMS);
 
     QString getIpConrol();
     quint16 getPortConrol();
@@ -27,9 +34,15 @@ public:
 
     QString getIpCamera1();
     quint16 getPortCamera1();
+    QString getLoginIpCamera1();
+    QString getPasswordIpcamera1();
 
     QString getIpCamera2();
     quint16 getPortCamera2();
+    QString getLoginIpCamera2();
+    QString getPasswordIpcamera2();
+
+    int getFrameMS();
 
 private:
     QString ipConrol = "127.0.0.1";
@@ -38,9 +51,15 @@ private:
 
     QString ipCamera1 = "192.168.1.13";
     quint16 portCamera1 = 554;
+    QString loginIpCamera1 = "admin";
+    QString passwordIpCamera1 = "123456";
 
     QString ipCamera2 = "192.168.1.13";
     quint16 portCamera2 = 554;
+    QString loginIpCamera2 = "admin";
+    QString passwordIpCamera2 = "123456";
+
+    int frameMS = 100;
 
 
     QMutex mutex;

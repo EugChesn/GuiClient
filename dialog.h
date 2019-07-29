@@ -1,6 +1,8 @@
 #ifndef DIALOG_H
 #define DIALOG_H
 
+#include "settingconst.h"
+
 #include <QDialog>
 #include <QCloseEvent>
 #include <opencv2/opencv.hpp>
@@ -33,7 +35,13 @@ private:
     QProcess *ping;
 
     QTimer * timer;
-    const std::string videoStreamAddress = "rtsp://admin:123456@192.168.1.13:554";
+    QString videoStreamAddress = "rtsp://"+ SettingConst::getInstance()->getLoginIpCamera1()
+            + ":"
+            + SettingConst::getInstance()->getPasswordIpcamera1()
+            +"@"
+            + SettingConst::getInstance()->getIpCamera1() +
+            ":"
+            + SettingConst::getInstance()->getPortCamera1();
 public:
     bool check_ping();
 public slots:

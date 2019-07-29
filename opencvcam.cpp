@@ -21,7 +21,7 @@ OpenCvCam *OpenCvCam::getInstance()
 }
 void OpenCvCam::processFrameAndUpdateGui()
 {
-    cam.open(videoStreamAddress);
+    cam.open(videoStreamAddress.toStdString());
     //if(!cam.open(videoStreamAddress)) {
     if(!cam.isOpened()) {
             //timer->stop();

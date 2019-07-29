@@ -38,11 +38,17 @@ Settings::Settings(QWidget *parent) :
 
     ui->ipCamera1->setText(sConst->getIpCamera1());
     ui->portCamera1->setText(QString::number(sConst->getPortCamera1()));
+    ui->loginCamera1->setText(sConst->getLoginIpCamera1());
+    ui->passwordCamera1->setText(sConst->getPasswordIpcamera1());
+
 
     ui->ipCamera2->setText(sConst->getIpCamera2());
     ui->portCamera2->setText(QString::number(sConst->getPortCamera2()));
+    ui->loginCamera2->setText(sConst->getLoginIpCamera2());
+    ui->passwordCamera2->setText(sConst->getPasswordIpcamera2());
 
     ui->ControlMS->setText(QString::number(sConst->getControlMS()));
+    ui->frameMS->setText(QString::number(sConst->getFrameMS()));
 }
 
 Settings::~Settings()
@@ -57,13 +63,18 @@ void Settings::on_buttonBox_accepted()
 
     sConst->setIpCamera1(ui->ipCamera1->text());
     sConst->setPortCamera1(ui->portCamera1->text().toInt());
+    sConst->setLoginIpCamera1(ui->loginCamera1->text());
+    sConst->setPasswordIpcamera1(ui->passwordCamera1->text());
 
     sConst->setIpCamera2(ui->ipCamera2->text());
     sConst->setPortCamera2(ui->portCamera2->text().toInt());
-
+    sConst->setLoginIpCamera2(ui->loginCamera2->text());
+    sConst->setPasswordIpcamera2(ui->passwordCamera2->text());
 
     sConst->setControlMS(ui->ControlMS->text().toInt());
+    sConst->setFrameMS(ui->frameMS->text().toInt());
 
+    sConst->saveSettingToFile();
 
     //if(ipControl)
 }

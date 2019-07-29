@@ -1,4 +1,5 @@
 #include "dialog.h"
+#include "settingconst.h"
 #include "ui_dialog.h"
 #include <QTimer>
 //#include <QProcess>
@@ -46,7 +47,7 @@ void Dialog::closeEvent(QCloseEvent *)
 bool Dialog::check_ping()
 {
     ping = new QProcess ();
-    ping->start("ping", QStringList() << "192.168.1.13"<<"-n"<<"1");
+    ping->start("ping", QStringList() << "vk.com"<<"-n"<<"1");
 
     if(ping->waitForFinished())
     {
@@ -55,6 +56,9 @@ bool Dialog::check_ping()
         QString res = QTextCodec::codecForName("IBM866")->toUnicode(output);
 
         const int percent = res.mid(res.indexOf('('), res.indexOf(')')).section('%', 0, 0).remove('(').toInt();
+        QRegExp re("(Среднее = )\S*(?:\s\S+)?");
+        ui->plainTextEdit->appendPlainText(res.mid(res.indexOf(re)));
+        qDebug() << res.mid(res.indexOf(re));
         if (percent > 50)return false;
         else return true;
     }
@@ -76,7 +80,7 @@ void Dialog::on_pushButton_clicked()
     {
         if(!cam.isOpened())
         {
-            if(!cam.open(videoStreamAddress)) {
+            if(!cam.open(videoStreamAddress.toStdString())) {
                  ui->plainTextEdit->appendPlainText("Error cam is not accessed successfully");
                  return;
             }

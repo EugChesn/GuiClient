@@ -93,10 +93,12 @@ void MainWindow::axisRightYChanged(double value)
 
 void MainWindow::onErrorTcpSocket(QString error)
 {
-    QString redText = "<span style=\" font-size:8pt; font-weight:600; color:#ff0000;\" >";
-    redText.append(error);
-    redText.append("</span>");
-    ui->plainTextEdit->appendHtml(redText);
+    if(!isTcpControlConnectedSignal) {
+        QString redText = "<span style=\" font-size:8pt; font-weight:600; color:#ff0000;\" >";
+        redText.append(error);
+        redText.append("</span>");
+        ui->plainTextEdit->appendHtml(redText);
+    }
     QTimer::singleShot(250, this, SLOT(on_pushButton_clicked()));
 }
 
