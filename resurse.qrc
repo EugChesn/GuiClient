@@ -9,12 +9,7 @@
         <file>images/Left.png</file>
         <file>images/Right.png</file>
         <file>images/red.png</file>
-<<<<<<< HEAD
         <file>images/pingON.png</file>
         <file>images/pingOFF.png</file>
-=======
-        <file>images/pingOFF.png</file>
-        <file>images/pingON.png</file>
->>>>>>> c0860cc693d8c65c086ffb5b54c2bb51484a726e
     </qresource>
 </RCC>

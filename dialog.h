@@ -40,7 +40,8 @@ private:
     QPixmap *pixOff;
 
     QTimer * timer;
-<<<<<<< HEAD
+    QTimer * timer_image;
+    QTimer * timer_ping;
     QString videoStreamAddress = "rtsp://"+ SettingConst::getInstance()->getLoginIpCamera1()
             + ":"
             + SettingConst::getInstance()->getPasswordIpcamera1()
@@ -48,11 +49,6 @@ private:
             + SettingConst::getInstance()->getIpCamera1() +
             ":"
             + SettingConst::getInstance()->getPortCamera1();
-=======
-    QTimer * timer_image;
-    QTimer * timer_ping;
-    const std::string videoStreamAddress = "rtsp://admin:123456@192.168.1.13:554";
->>>>>>> c0860cc693d8c65c086ffb5b54c2bb51484a726e
 public:
     bool check_ping();
 public slots:
