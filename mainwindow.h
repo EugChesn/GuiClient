@@ -48,6 +48,8 @@ private slots:
 
     void on_startCam_clicked();
 
+    void on_setings_clicked();
+
 protected:
     //для обработки клавиатуры
     bool eventFilter(QObject *obj, QEvent *event);
@@ -66,6 +68,7 @@ private:
     void startTimerForSendStickCommand();
     void stopGamepad();
     void stopSocket();
+
 
     QLabel *redL,*redR;
     bool upKey, downKey, rightKey, leftKey;

@@ -1,3 +1,4 @@
+#include "settingconst.h"
 #include "tcpcontrol.h"
 
 TcpControl* TcpControl::instance = nullptr;
@@ -11,10 +12,10 @@ TcpControl* TcpControl::getInstance()
 
 void TcpControl::connectToHost()
 {
-    socket->connectToHost(QHostAddress::LocalHost, port);
+    socket->connectToHost(SettingConst::getInstance()->getIpConrol(), SettingConst::getInstance()->getPortConrol());
     state = true;
     emit getState(true);
-    emit getLog(" Socket connect to host");
+    //emit getLog(" Socket connect to host");
     disconnect = false;
 //    if(disconnect)
 //        disconnect = false;
@@ -56,9 +57,8 @@ void TcpControl::sendCommand(/*double axisLeftX, double axisLeftY, double axisRi
     socket->flush();
 }
 
-TcpControl::TcpControl(quint16 port, QObject *parent) : QObject(parent)
+TcpControl::TcpControl(QObject *parent) : QObject(parent)
 {
-    this->port = port;
     //server = new QTcpServer(this);
     socket = new QTcpSocket(this);
     QString log = " Socket init";
@@ -191,7 +191,7 @@ void TcpControl::sendCommandUsingTimer()
     if(!timer->isActive()) {
         if(!disconnect)
             connect(timer, SIGNAL(timeout()), this, SLOT(sendCommand()));
-        timer->start(220);
+        timer->start(SettingConst::getInstance()->getControlMS());
     }
 }
 

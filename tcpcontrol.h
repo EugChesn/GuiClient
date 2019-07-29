@@ -20,8 +20,6 @@ public:
 
     static TcpControl* getInstance();
     //public
-    quint16 port;
-    QHostAddress address = QHostAddress::LocalHost;
     bool state = false;
 
     void connectToHost();
@@ -67,7 +65,7 @@ private:
     static TcpControl *instance;
     TcpControl( const TcpControl& );
     TcpControl& operator=( TcpControl& );
-    explicit TcpControl(quint16 port = 7676, QObject *parent = nullptr);
+    explicit TcpControl(QObject *parent = nullptr);
     QTimer *timer;
 
     QByteArray intToArray(quint32 source);

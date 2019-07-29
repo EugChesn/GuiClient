@@ -2,10 +2,12 @@
 #include "ui_mainwindow.h"
 
 #include "QtNetwork"
+#include "settings.h"
 
 #include <QPainter>
 #include <QGamepad>
 #include <QGamepadManager>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -21,13 +23,6 @@ MainWindow::MainWindow(QWidget *parent) :
     gamepad = new QGamepad(deviceId, this);
     installEventFilter(this);
     upKey = downKey = rightKey = leftKey = false;
-
-
-    //Camera
-    //openCam = new OpenCvCam(this);
-    //openCam = OpenCvCam::getInstance();
-    //connect(openCam,SIGNAL(errorCam()),this,SLOT(errorReadCam()));
-    //connect(openCam,SIGNAL(getPixmap(QPixmap)),ui->label_2,SLOT(setPixmap(QPixmap)));
 }
 
 MainWindow::~MainWindow()
@@ -40,18 +35,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    QString nParameter = " -n";
-        QString pingCount = " 1"; //(int)
-        QString wParameter = " -w";
-        QString pingWaitTime = " 10"; //(ms)
-        QProcess * pingProcess = new QProcess(this);
-        int exitCode = 0;
-        QString strIpaddress = " 192.168.99.158";
-        pingProcess->start("ping" + strIpaddress + nParameter + pingCount + wParameter + pingWaitTime);
-        if (exitCode==0){
-            ui->plainTextEdit->appendPlainText(pingProcess->readAllStandardError());
-            ui->plainTextEdit->appendPlainText(pingProcess->readAllStandardOutput());
-        }
     startServer();
     startGamepad();
 }
@@ -114,9 +97,6 @@ void MainWindow::onErrorTcpSocket(QString error)
     redText.append(error);
     redText.append("</span>");
     ui->plainTextEdit->appendHtml(redText);
-    ui->plainTextEdit->appendPlainText(" tcp" + QString::number(isTcpControlConnected) + QString::number(isTcpControlConnectedSignal));
-    ui->plainTextEdit->appendPlainText(" gamepad" + isGamepadConnectedSignal);
-
     QTimer::singleShot(250, this, SLOT(on_pushButton_clicked()));
 }
 
@@ -130,7 +110,7 @@ void MainWindow::startServer()
 //            disconnect(timer, SIGNAL(timeout()), this, SLOT(on_pushButton_clicked()));
 //            timer->stop();
 //        }
-        ui->plainTextEdit->appendPlainText(" Server port: " + QString::number(tcpControl->port));
+        ui->plainTextEdit->appendPlainText(" Server port: " + SettingConst::getInstance()->getPortConrol());
         if(!isTcpControlConnectedSignal){
             connect(tcpControl, SIGNAL(getLog(QString)), ui->plainTextEdit, SLOT(appendPlainText(QString)));
             connect(tcpControl, SIGNAL(getError(QString)), this, SLOT(onErrorTcpSocket(QString)));
@@ -253,13 +233,12 @@ void MainWindow::on_stop_clicked()
 {
     stopGamepad();
     stopSocket();
-
+    ui->plainTextEdit->appendPlainText("Все отключенно!");
 }
 
 void MainWindow::stopGamepad()
 {
     if(isGamepadConnectedSignal) {
-        ui->plainTextEdit->appendPlainText("Все отключенно!");
         disconnect(gamepad, SIGNAL(axisLeftXChanged(double)), this, SLOT(axisLeftXChanged(double)));
         disconnect(gamepad, SIGNAL(axisLeftYChanged(double)), this, SLOT(axisLeftYChanged(double)));
         disconnect(gamepad, SIGNAL(axisRightXChanged(double)), this, SLOT(axisRightXChanged(double)));
@@ -273,10 +252,12 @@ void MainWindow::stopGamepad()
 
 void MainWindow::stopSocket()
 {
-    if(isTcpControlConnectedSignal) {
+    if(isTcpControlConnected) {
         tcpControl->disconnect = true;
         tcpControl->disconnectToHost();
         isTcpControlConnected = false;
+    }
+    if(isTcpControlConnectedSignal) {
         onChangeStateServer(false);
         disconnect(tcpControl, SIGNAL(getLog(QString)), ui->plainTextEdit, SLOT(appendPlainText(QString)));
         disconnect(tcpControl, SIGNAL(getError(QString)), ui->plainTextEdit, SLOT(appendPlainText(QString)));
@@ -284,9 +265,22 @@ void MainWindow::stopSocket()
         isTcpControlConnectedSignal = false;
     }
 }
+
 void MainWindow::on_startCam_clicked()
 {
     Dialog *mDialog = new Dialog(this);
     mDialog->show();
     //windowCam = new WindowCam(this);
+}
+
+void MainWindow::on_setings_clicked()
+{
+    Settings *dialogSettings = new Settings(this);
+    dialogSettings->show();
+    if (dialogSettings->exec() == QDialog::Accepted) {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Внимание!");
+        msgBox.setText("Настройки применены.");
+        msgBox.exec();
+    }
 }

@@ -31,6 +31,8 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
         opencvcam.cpp \
+        settingconst.cpp \
+        settings.cpp \
         tcpcontrol.cpp \
         udpstream.cpp
 
@@ -38,12 +40,15 @@ HEADERS += \
         dialog.h \
         mainwindow.h \
         opencvcam.h \
+        settingconst.h \
+        settings.h \
         tcpcontrol.h \
         udpstream.h
 
 FORMS += \
         dialog.ui \
-        mainwindow.ui
+        mainwindow.ui \
+        settings.ui
 
 #INCLUDEPATH += C:/opencv/opencv-bin/install/include
 #LIBS += -LC:\\opencv\\opencv-bin\\install\\x64\\mingw\\bin \
