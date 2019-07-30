@@ -57,9 +57,6 @@ bool Dialog::check_ping()
         QString res = QTextCodec::codecForName("IBM866")->toUnicode(output);
 
         const int percent = res.mid(res.indexOf('('), res.indexOf(')')).section('%', 0, 0).remove('(').toInt();
-        QRegExp re("(Среднее = )\S*(?:\s\S+)?");
-        ui->plainTextEdit->appendPlainText(res.mid(res.indexOf(re)));
-        qDebug() << res.mid(res.indexOf(re));
         if (percent > 50)return false;
         else return true;
     }
@@ -86,8 +83,15 @@ void Dialog::print_ping()
     qDebug()<<count_signal_ping;
     if(count_signal_ping % 2 == 0)
     {
-        QString res = ping->readAllStandardOutput();
+        QByteArray out = ping->readAllStandardOutput();
+        QString res = QTextCodec::codecForName("IBM866")->toUnicode(out);
         int percent = res.mid(res.indexOf('('), res.indexOf(')')).section('%', 0, 0).remove('(').toInt();
+
+        QRegExp re("(Среднее = )\S*(?:\s\S+)?");
+        if(res.contains(re)){
+            QString strping = res.mid(res.indexOf(re)).split("=").at(1);
+            ui->plainTextEdit->appendPlainText("Средняя задержка = " + strping);
+        }
         qDebug()<<percent;
         if (percent > 50)
         {
@@ -118,7 +122,7 @@ void Dialog::status_image()
 void Dialog::ping_timer()
 {
     if(!ping->state() == QProcess::Starting)
-        ping->start("ping", QStringList() << "192.168.1.13"<<"-n"<<"1");
+        ping->start("ping", QStringList() << SettingConst::getInstance()->getIpCamera1() <<"-n"<<"1");
 }
 
 void Dialog::finished()
