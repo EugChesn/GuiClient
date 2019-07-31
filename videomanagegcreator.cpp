@@ -17,3 +17,7 @@ void VideoManagegCreator::create()
     vidManager = new VideoManager();
     vidManager->start();
 }
+VideoManagegCreator::~VideoManagegCreator()
+{
+    vidManager->~VideoManager();
+}

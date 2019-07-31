@@ -30,6 +30,7 @@ private:
 
     VideoManagegCreator * vidManagerCreator;
     QThread * thVideo;
+    bool start_Qthread;
 
     /*cv::VideoCapture cam;
     double dWidth;

@@ -12,6 +12,7 @@ Dialog::Dialog(QWidget *parent) :
     ui(new Ui::Dialog)
 {
     ui->setupUi(this);
+    start_Qthread = false;
 
    /* VideoThread * thVid = new VideoThread(this);
     connect(thVid,SIGNAL(send_frame(QImage *)),this,SLOT(processFrameAndUpdateGui(QImage *)));
@@ -26,11 +27,20 @@ Dialog::Dialog(QWidget *parent) :
 Dialog::~Dialog()
 {
     delete ui;
+    if(start_Qthread)
+        thVideo->~QThread();
 }
 
 void Dialog::closeEvent(QCloseEvent *)
 {
     parentWidget()->show();
+    if(start_Qthread)
+    {
+         thVideo->exit(0);
+         while(!thVideo->isFinished()) {}
+    }
+    start_Qthread = false;
+    this->~Dialog();
 }
 
 
@@ -41,6 +51,7 @@ void Dialog::startVideoThread()
     vidManagerCreator->moveToThread(thVideo);
 
     thVideo->start();
+    start_Qthread = true;
     QObject::connect(thVideo, SIGNAL(started()), vidManagerCreator, SLOT(create()));
     QObject::connect(thVideo, SIGNAL(finished()), vidManagerCreator, SLOT(deleteLater()));
 
@@ -52,8 +63,6 @@ void Dialog::stopVideoThread()
 {
     if(thVideo->isRunning())
         thVideo->exit(0);
-
-    this->close();
 }
 void Dialog::onFrame(QImage frame)
 {
