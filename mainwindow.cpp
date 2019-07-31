@@ -69,7 +69,6 @@ void MainWindow::axisLeftXChanged(double value)
 {
     this->axisLeftX = value;
     sendStickCommand();
-    //ui->plainTextEdit->appendPlainText("axisLeftX: " + QString::number(value));
     redL->move((axisLeftX*50)+75, (axisLeftY*50)+75);
 }
 
@@ -77,7 +76,6 @@ void MainWindow::axisLeftYChanged(double value)
 {
     this->axisLeftY = value;
    sendStickCommand();
-    //ui->plainTextEdit->appendPlainText("axisLeftY: " + QString::number(value));
     redL->move((axisLeftX*50)+75, (axisLeftY*50)+75);
 }
 
@@ -85,7 +83,6 @@ void MainWindow::axisRightXChanged(double value)
 {
     this->axisRightX = value;
     sendStickCommand();
-    //ui->plainTextEdit->appendPlainText("axisRightX: " + QString::number(value));
     redR->move((axisRightX*50)+75, (axisRightY*50)+75);
 }
 
@@ -93,7 +90,6 @@ void MainWindow::axisRightYChanged(double value)
 {
     this->axisRightY = value;
     sendStickCommand();
-    //ui->plainTextEdit->appendPlainText("axisRightY: " + QString::number(value));
     redR->move((axisRightX*50)+75, (axisRightY*50)+75);
 }
 
@@ -105,13 +101,13 @@ void MainWindow::onErrorTcpSocket(QString error)
         redText.append("</span>");
         ui->plainTextEdit->appendHtml(redText);
     }
-    QTimer::singleShot(250, this, SLOT(on_pushButton_clicked()));
+    if(isTcpControlConnectedSignal || isGamepadConnectedSignal)
+        QTimer::singleShot(250, this, SLOT(on_pushButton_clicked()));
 }
 
 void MainWindow::startServer()
 {
     tcpControl = TcpControl::getInstance();
-    qDebug() << "Mainwindow "<< QThread::currentThreadId();
     if(!isTcpControlConnected) {
         tcpControl->connectToHost();
         isTcpControlConnected = true;
@@ -119,7 +115,7 @@ void MainWindow::startServer()
 //            disconnect(timer, SIGNAL(timeout()), this, SLOT(on_pushButton_clicked()));
 //            timer->stop();
 //        }
-        ui->plainTextEdit->appendPlainText(" Server port: " + SettingConst::getInstance()->getPortConrol());
+        //ui->plainTextEdit->appendPlainText(" Server port: " + SettingConst::getInstance()->getPortConrol());
         if(!isTcpControlConnectedSignal){
             connect(tcpControl, SIGNAL(getLog(QString)), ui->plainTextEdit, SLOT(appendPlainText(QString)));
             connect(tcpControl, SIGNAL(getError(QString)), this, SLOT(onErrorTcpSocket(QString)));

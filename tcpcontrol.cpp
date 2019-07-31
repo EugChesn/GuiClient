@@ -30,6 +30,7 @@ void TcpControl::disconnectToHost()
     socket->close();
     disconnect = true;
     timer->stop();
+    timer->deleteLater();
 }
 
 void TcpControl::resetConnect()
