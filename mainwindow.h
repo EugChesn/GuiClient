@@ -8,7 +8,6 @@
 #include "mrvisuallib.h"
 
 #include "dialog.h"
-#include "opencvcam.h"
 
 namespace Ui {
 class MainWindow;
