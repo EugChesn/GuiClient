@@ -27,7 +27,8 @@ Settings::Settings(QWidget *parent) :
 
 
     ui->ControlMS->setValidator(new QIntValidator(250, 10000, this));
-
+    ui->frameMS->setValidator(new QIntValidator(250, 10000, this));
+    ui->pingMS->setValidator(new QIntValidator(250, 10000, this));
 
     sConst = SettingConst::getInstance();
 
@@ -49,6 +50,7 @@ Settings::Settings(QWidget *parent) :
 
     ui->ControlMS->setText(QString::number(sConst->getControlMS()));
     ui->frameMS->setText(QString::number(sConst->getFrameMS()));
+    ui->pingMS->setText(QString::number(sConst->getPingMS()));
 }
 
 Settings::~Settings()
@@ -73,6 +75,7 @@ void Settings::on_buttonBox_accepted()
 
     sConst->setControlMS(ui->ControlMS->text().toInt());
     sConst->setFrameMS(ui->frameMS->text().toInt());
+    sConst->setPingMS(ui->pingMS->text().toInt());
 
     sConst->saveSettingToFile();
 

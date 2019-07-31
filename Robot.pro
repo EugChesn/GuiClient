@@ -4,9 +4,15 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui opengl
 QT += network
 QT += gamepad
+
+
+LIBS += -L$$PWD/source/mrvisual/ -lMRVisualLib
+
+INCLUDEPATH += $$PWD/source/mrvisual
+DEPENDPATH += $$PWD/source/mrvisual
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -96,3 +102,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     resurse.qrc
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/MRVisualLib/release/ -lMRVisualLib
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/MRVisualLib/debug/ -lMRVisualLib
+
+INCLUDEPATH += $$PWD/MRVisualLib/debug
+DEPENDPATH += $$PWD/MRVisualLib/debug

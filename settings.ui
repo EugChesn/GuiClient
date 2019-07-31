@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>472</width>
-    <height>456</height>
+    <height>487</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,7 @@
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>110</x>
+     <x>120</x>
      <y>400</y>
      <width>341</width>
      <height>32</height>
@@ -310,19 +310,6 @@
        </layout>
       </item>
       <item>
-       <spacer name="horizontalSpacer_8">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
        <widget class="QLineEdit" name="ControlMS"/>
       </item>
       <item>
@@ -354,7 +341,10 @@
        </layout>
       </item>
       <item>
-       <spacer name="horizontalSpacer_13">
+       <widget class="QLineEdit" name="frameMS"/>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_14">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -366,11 +356,26 @@
         </property>
        </spacer>
       </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_8">
       <item>
-       <widget class="QLineEdit" name="frameMS"/>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QLabel" name="label_14">
+          <property name="text">
+           <string>Скорость отправки ping в милисекунду</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
-       <spacer name="horizontalSpacer_14">
+       <widget class="QLineEdit" name="pingMS"/>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_16">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>

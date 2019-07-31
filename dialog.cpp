@@ -131,6 +131,7 @@ void Dialog::finished()
 }
 void Dialog::on_pushButton_clicked()
 {
+    qDebug() << "Dialog" << QThread::currentThreadId();
     if(flag_ping_cam)
     {
         ui->plainTextEdit->appendPlainText("Host cam found");

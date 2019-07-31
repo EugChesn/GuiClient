@@ -28,6 +28,8 @@ public:
 
     void setFrameMS(int frameMS);
 
+    void setPingMS(int pingMS);
+
     QString getIpConrol();
     quint16 getPortConrol();
     int getControlMS();
@@ -43,6 +45,8 @@ public:
     QString getPasswordIpcamera2();
 
     int getFrameMS();
+
+    int getPingMS();
 
 private:
     QString ipConrol = "127.0.0.1";
@@ -60,6 +64,8 @@ private:
     QString passwordIpCamera2 = "123456";
 
     int frameMS = 100;
+
+    int pingMS = 2000;
 
 
     QMutex mutex;

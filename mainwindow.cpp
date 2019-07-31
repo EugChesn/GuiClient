@@ -24,6 +24,10 @@ MainWindow::MainWindow(QWidget *parent) :
     gamepad = new QGamepad(deviceId, this);
     installEventFilter(this);
     upKey = downKey = rightKey = leftKey = false;
+
+    //START PING
+    startPing();
+    //----------
 }
 
 MainWindow::~MainWindow()
@@ -38,6 +42,7 @@ void MainWindow::on_pushButton_clicked()
 {
     startServer();
     startGamepad();
+    startMRVisual();
 }
 
 void MainWindow::onChangeStateServer(bool state)
@@ -106,6 +111,7 @@ void MainWindow::onErrorTcpSocket(QString error)
 void MainWindow::startServer()
 {
     tcpControl = TcpControl::getInstance();
+    qDebug() << "Mainwindow "<< QThread::currentThreadId();
     if(!isTcpControlConnected) {
         tcpControl->connectToHost();
         isTcpControlConnected = true;
@@ -123,7 +129,6 @@ void MainWindow::startServer()
             tcpControl->sendCommandUsingTimer();
         }
     }
-
 }
 
 void MainWindow::startGamepad()
@@ -236,6 +241,7 @@ void MainWindow::on_stop_clicked()
 {
     stopGamepad();
     stopSocket();
+    stopMRVusual();
     ui->plainTextEdit->appendPlainText("Все отключенно!");
 }
 
@@ -269,6 +275,160 @@ void MainWindow::stopSocket()
     }
 }
 
+//MRVisual-----------------------------------------
+void MainWindow::startMRVisual()
+{
+    if(!isMRVisualConnectedSignal) {
+        mrVisual = new MRVisualLib(this);
+        connect(tcpControl, SIGNAL(getPositionInSpase(float,float,float)), this, SLOT(handlerMRVisual(float,float,float)));
+        ui->gridLayoutMRVisual->addWidget(mrVisual);
+        isMRVisualConnectedSignal = true;
+    }
+}
+
+void MainWindow::stopMRVusual()
+{
+    if(isMRVisualConnectedSignal) {
+        mrVisual->deleteLater();
+        disconnect(tcpControl, SIGNAL(getPositionInSpase(float,float,float)), this, SLOT(handlerMRVisual(float,float,float)));
+        isMRVisualConnectedSignal = false;
+    }
+}
+
+void MainWindow::handlerMRVisual(float x, float y, float z)
+{
+    mrVisual->rotate(x,y,z);
+}
+//-------------------------------------
+
+//PING------------------------------------------------
+void MainWindow::startPing()
+{
+    //Ping to Server, Camera1, Camera2
+    pingServer = new QProcess ();
+    count_signal_ping_Server = 0;
+    connect(pingServer, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_server()) );
+    connect(pingServer,SIGNAL(finished(int)),pingServer,SLOT(kill()));
+
+    pingCamera1 = new QProcess ();
+    count_signal_ping_Camera_1 = 0;
+    connect(pingCamera1, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_camera1()) );
+    connect(pingCamera1,SIGNAL(finished(int)),pingCamera1,SLOT(kill()));
+
+    pingCamera2 = new QProcess ();
+    count_signal_ping_Camera_2 = 0;
+    connect(pingCamera2, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_camera2()) );
+    connect(pingCamera2,SIGNAL(finished(int)),pingCamera2,SLOT(kill()));
+
+    timer = new QTimer(this);
+    connect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_server()));
+    connect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_camera1()));
+    connect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_camera2()));
+    timer->start(SettingConst::getInstance()->getPingMS());
+}
+
+void MainWindow::ping_timer_server()
+{
+    if(!(pingServer->state() == QProcess::Starting))
+        pingServer->start("ping", QStringList() << SettingConst::getInstance()->getIpConrol() <<"-n"<<"1");
+}
+void MainWindow::ping_timer_camera1()
+{
+    if(!(pingCamera1->state() == QProcess::Starting))
+        pingCamera1->start("ping", QStringList() << SettingConst::getInstance()->getIpCamera1() <<"-n"<<"1");
+}
+void MainWindow::ping_timer_camera2()
+{
+    if(!(pingCamera2->state() == QProcess::Starting))
+        pingCamera2->start("ping", QStringList() << SettingConst::getInstance()->getIpCamera2() <<"-n"<<"1");
+}
+
+void MainWindow::print_ping_server()
+{
+    count_signal_ping_Server++;
+    if(count_signal_ping_Server % 2 == 0)
+    {
+        QByteArray out = pingServer->readAllStandardOutput();
+        QString res = QTextCodec::codecForName("IBM866")->toUnicode(out);
+        int percent = res.mid(res.indexOf('('), res.indexOf(')')).section('%', 0, 0).remove('(').toInt();
+        QRegExp re("(Среднее = )\\S*(?:\\s\\S+)?");
+        if(res.contains(re)){
+            QString strping = res.mid(res.indexOf(re)).split("=").at(1);
+            ui->pingTextServer->setText(strping);
+        }
+        if (percent > 50)
+        {
+            QPixmap pix(":/images/pingOFF.png");
+            ui->pictureServerPing->setPixmap(pix);
+            ui->pingTextServer->setText("");
+        }
+        else
+        {
+            QPixmap pix(":/images/pingON.png");
+            ui->pictureServerPing->setPixmap(pix);
+        }
+    }
+}
+
+void MainWindow::print_ping_camera1()
+{
+    count_signal_ping_Camera_1++;
+    if(count_signal_ping_Camera_1 % 2 == 0)
+    {
+        QByteArray out = pingCamera1->readAllStandardOutput();
+        QString res = QTextCodec::codecForName("IBM866")->toUnicode(out);
+        int percent = res.mid(res.indexOf('('), res.indexOf(')')).section('%', 0, 0).remove('(').toInt();
+
+        QRegExp re("(Среднее = )\\S*(?:\\s\\S+)?");
+        if(res.contains(re)){
+            QString strping = res.mid(res.indexOf(re)).split("=").at(1);
+            ui->pingTextCamera1->setText(strping);
+        }
+        if (percent > 50)
+        {
+            QPixmap pix(":/images/pingOFF.png");
+            ui->pictureCamera1Ping->setPixmap(pix);
+            ui->pingTextCamera1->setText("");
+        }
+        else
+        {
+            QPixmap pix(":/images/pingON.png");
+            ui->pictureCamera1Ping->setPixmap(pix);
+        }
+    }
+}
+
+void MainWindow::print_ping_camera2()
+{
+    count_signal_ping_Camera_2++;
+    if(count_signal_ping_Camera_2 % 2 == 0)
+    {
+        QByteArray out = pingCamera2->readAllStandardOutput();
+        QString res = QTextCodec::codecForName("IBM866")->toUnicode(out);
+        int percent = res.mid(res.indexOf('('), res.indexOf(')')).section('%', 0, 0).remove('(').toInt();
+        QRegExp re("(Среднее = )\\S*(?:\\s\\S+)?");
+        if(res.contains(re)){
+            QString strping = res.mid(res.indexOf(re)).split("=").at(1);
+            ui->pingTextCamera2->setText(strping);
+        }
+        if (percent > 50)
+        {
+            QPixmap pix(":/images/pingOFF.png");
+            ui->pictureCamera2Ping->setPixmap(pix);
+            ui->pingTextCamera2->setText("");
+        }
+        else
+        {
+            QPixmap pix(":/images/pingON.png");
+            ui->pictureCamera2Ping->setPixmap(pix);
+        }
+    }
+}
+//------------------------------------------------------------------
+
+
+
+
 void MainWindow::on_startCam_clicked()
 {
     /*QThread * start_dialog = new QThread;
@@ -284,6 +444,19 @@ void MainWindow::on_setings_clicked()
     Settings *dialogSettings = new Settings(this);
     dialogSettings->show();
     if (dialogSettings->exec() == QDialog::Accepted) {
+        disconnect(pingServer, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_server()) );
+        disconnect(pingServer,SIGNAL(finished(int)),pingServer,SLOT(kill()));
+        disconnect(pingCamera1, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_camera1()) );
+        disconnect(pingCamera1,SIGNAL(finished(int)),pingCamera1,SLOT(kill()));
+        disconnect(pingCamera2, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_camera2()) );
+        disconnect(pingCamera2,SIGNAL(finished(int)),pingCamera2,SLOT(kill()));
+        disconnect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_server()));
+        disconnect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_camera1()));
+        disconnect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_camera2()));
+
+
+        startPing();
+
         QMessageBox msgBox;
         msgBox.setWindowTitle("Внимание!");
         msgBox.setText("Настройки применены.");

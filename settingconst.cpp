@@ -28,6 +28,7 @@ QString SettingConst::getAllToString()
     strList.append("passwordIpCamera2:" + passwordIpCamera2);
     strList.append("сontrolMS:" + QString::number(controlMS));
     strList.append("frameMS:" + QString::number(frameMS));
+    strList.append("pingMS:" + QString::number(pingMS));
 
     return strList.join("\n");
 }
@@ -53,44 +54,50 @@ void SettingConst::readSettingFromFile()
         while(!file.atEnd()) {
             QString line = file.readLine();
             QStringList str= line.split(":");
+            QString res = str.at(1);
+            res = res.remove(QRegExp("\\r"));
+            res = res.remove(QRegExp("\\n"));
             if(str.at(0) == "ipConrol") {
-                setIpConrol(str.at(1));
+                setIpConrol(res);
             }
             if(str.at(0) == "portConrol") {
-                setPortConrol(str.at(1).toInt());
+                setPortConrol(res.toInt());
             }
             if(str.at(0) == "controlMS") {
-                setControlMS(str.at(1).toInt());
+                setControlMS(res.toInt());
             }
             if(str.at(0) == "ipCamera1") {
-                setIpCamera1(str.at(1));
+                setIpCamera1(res);
             }
             if(str.at(0) == "portCamera1") {
-                setPortCamera1(str.at(1).toInt());
+                setPortCamera1(res.toInt());
             }
             if(str.at(0) == "loginIpCamera1") {
-                setLoginIpCamera1(str.at(1));
+                setLoginIpCamera1(res);
             }
             if(str.at(0) == "passwordIpCamera1") {
-                setPasswordIpcamera1(str.at(1));
+                setPasswordIpcamera1(res);
             }
             if(str.at(0) == "ipCamera2") {
-                setIpCamera2(str.at(1));
+                setIpCamera2(res);
             }
             if(str.at(0) == "portCamera2") {
-                setPortCamera2(str.at(1).toInt());
+                setPortCamera2(res.toInt());
             }
             if(str.at(0) == "loginIpCamera2") {
-                setLoginIpCamera2(str.at(1));
+                setLoginIpCamera2(res);
             }
             if(str.at(0) == "passwordIpCamera2") {
-                setPasswordIpcamera2(str.at(1));
+                setPasswordIpcamera2(res);
             }
             if(str.at(0) == "сontrolMS") {
-                setControlMS(str.at(1).toInt());
+                setControlMS(res.toInt());
             }
             if(str.at(0) == "frameMS") {
-                setFrameMS(str.at(1).toInt());
+                setFrameMS(res.toInt());
+            }
+            if(str.at(0) == "pingMS") {
+                setPingMS(res.toInt());
             }
         }
     }
@@ -180,6 +187,13 @@ void SettingConst::setFrameMS(int frameMS)
     mutex.unlock();
 }
 
+void SettingConst::setPingMS(int pingMS)
+{
+    mutex.lock();
+    this->pingMS = pingMS;
+    mutex.unlock();
+}
+
 QString SettingConst::getIpConrol()
 {
     return ipConrol;
@@ -238,6 +252,11 @@ QString SettingConst::getPasswordIpcamera2()
 int SettingConst::getFrameMS()
 {
     return frameMS;
+}
+
+int SettingConst::getPingMS()
+{
+    return pingMS;
 }
 
 SettingConst::SettingConst()

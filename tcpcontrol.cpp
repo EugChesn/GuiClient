@@ -51,7 +51,7 @@ void TcpControl::setCommand(double axisLeftX, double axisLeftY, double axisRight
 void TcpControl::sendCommand(/*double axisLeftX, double axisLeftY, double axisRightX, double axisRightY*/)
 {
     QByteArray byteArray;
-    QString command = "lx:" + QString::number((axisLeftX)) + ",ly:" + QString::number((axisLeftY)) + ",rx:" + QString::number((axisRightX)) + ",ry:" + QString::number((axisRightY));
+    QString command = "MOVE=lx:" + QString::number((axisLeftX)) + ",ly:" + QString::number((axisLeftY)) + ",rx:" + QString::number((axisRightX)) + ",ry:" + QString::number((axisRightY)) + ";";
     byteArray = command.toUtf8();
     socket->write(byteArray);
     socket->flush();
@@ -65,7 +65,6 @@ TcpControl::TcpControl(QObject *parent) : QObject(parent)
 
     qDebug() << log;
     emit getLog(log);
-    //connect(server, SIGNAL(newConnection()), this, SLOT(incommingConnection())); // подключаем сигнал "новое подключение" к нашему обработчику подключений
     connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onError(QAbstractSocket::SocketError)));
     connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
     connect(socket, SIGNAL(hostFound()), this, SLOT(hostFound()));
@@ -109,18 +108,22 @@ TcpControl::~TcpControl() {
 
 void TcpControl::readyRead()
 {
-//    if (socket->state() == QTcpSocket::ConnectedState) {
-//        QString command = QString::fromUtf8(socket->readAll());
-//        qDebug() << command;
-//        emit getCommand(command);
-//    }
-    emit getLog("Socket ready Read!");
-    qDebug() << "Socket ready read";
-    //socket->waitForReadyRead(10000);
     QByteArray data = socket->readAll();
-
-    qDebug() << data;
-    emit getLog(data);
+    QString commandServer = data;
+    //qDebug() << "SERVER SEND:" << commandServer;
+    if(commandServer.contains("POS=")) {
+        int pos = 0;
+        QRegExp rx("((\\d{1,3}\\.\\d{1,3})|(\\d{1,3}))");
+        QStringList line;
+        while ((pos = rx.indexIn(commandServer, pos)) != -1) {
+            line.append(rx.cap(1));
+            pos += rx.matchedLength();
+        }
+        float x = !line.at(0).isNull()? line.at(0).toFloat() > 0? line.at(0).toFloat() : 0 : 0;
+        float y = !line.at(1).isNull()? line.at(1).toFloat() > 0? line.at(1).toFloat() : 0 : 0;
+        float z = !line.at(2).isNull()? line.at(2).toFloat() > 0? line.at(2).toFloat() : 0 : 0;
+        emit getPositionInSpase(x,y,z);
+    }
     socket->flush();
 }
 
