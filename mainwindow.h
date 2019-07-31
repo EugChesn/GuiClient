@@ -7,7 +7,6 @@
 #include <QLabel>
 
 #include "dialog.h"
-#include "opencvcam.h"
 
 namespace Ui {
 class MainWindow;

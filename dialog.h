@@ -8,6 +8,8 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 #include <QProcess>
+#include <QThread>
+#include "videomanagegcreator.h"
 
 namespace Ui {
 class Dialog;
@@ -25,7 +27,11 @@ protected:
 
 private:
     Ui::Dialog *ui;
-    cv::VideoCapture cam;
+
+    VideoManagegCreator * vidManagerCreator;
+    QThread * thVideo;
+
+    /*cv::VideoCapture cam;
     double dWidth;
     double dHeight;
     double fps;
@@ -42,24 +48,30 @@ private:
     QTimer * timer;
     QTimer * timer_image;
     QTimer * timer_ping;
-    QString videoStreamAddress = "rtsp://"+ SettingConst::getInstance()->getLoginIpCamera1()
+    std::string videoStreamAddress = ("rtsp://"+ SettingConst::getInstance()->getLoginIpCamera1()
             + ":"
             + SettingConst::getInstance()->getPasswordIpcamera1()
             +"@"
             + SettingConst::getInstance()->getIpCamera1() +
             ":"
-            + SettingConst::getInstance()->getPortCamera1();
+            + SettingConst::getInstance()->getPortCamera1()).toStdString();*/
 public:
-    bool check_ping();
+    //bool check_ping();
+
+    void startVideoThread();
+    void stopVideoThread();
 public slots:
-    void processFrameAndUpdateGui();
-    void print_ping();
-    void status_image();
-    void ping_timer();
-    void finished();
+    //void processFrameAndUpdateGui();
+    //void print_ping();
+    //void status_image();
+    //void ping_timer();
+    //void finished();
+
+    void onFrame(QImage frame);
 
 private slots:
     void on_pushButton_clicked();
+    void on_pushButton_2_clicked();
 };
 
 #endif // DIALOG_H
