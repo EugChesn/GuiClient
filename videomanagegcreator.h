@@ -13,6 +13,7 @@ public:
     //explicit VideoManagegCreator(QObject *parent = nullptr);
     VideoManagegCreator();
     VideoManager * getManager();
+~VideoManagegCreator();
 
 signals:
 public slots:
