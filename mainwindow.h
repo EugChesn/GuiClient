@@ -31,6 +31,7 @@ private slots:
     void on_pushButton_clicked();
     void on_stop_clicked();
 
+    void appendText(QString text);
 
     //для геймпада
     void sendStickCommand();
@@ -73,10 +74,6 @@ private:
 
     QTimer *timer;
     QThread *threadTcpControl;
-
-
-
-    void appendText(QString text);
 
     void startTimerForSendStickCommand();
     //SERVER

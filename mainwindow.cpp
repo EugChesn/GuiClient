@@ -99,7 +99,8 @@ void MainWindow::onErrorTcpSocket(QString error)
         QString redText = "<span style=\" font-size:8pt; font-weight:600; color:#ff0000;\" >";
         redText.append(error);
         redText.append("</span>");
-        ui->plainTextEdit->appendHtml(redText);
+        QTime currTime = QTime::currentTime();
+        ui->plainTextEdit->appendHtml("[" + currTime.toString("hh:mm:ss") + "]: " + redText);
     }
     if(isTcpControlConnectedSignal || isGamepadConnectedSignal)
         QTimer::singleShot(250, this, SLOT(on_pushButton_clicked()));
@@ -111,13 +112,8 @@ void MainWindow::startServer()
     if(!isTcpControlConnected) {
         tcpControl->connectToHost();
         isTcpControlConnected = true;
-//        if(timer != nullptr && timer->isActive()) {
-//            disconnect(timer, SIGNAL(timeout()), this, SLOT(on_pushButton_clicked()));
-//            timer->stop();
-//        }
-        //ui->plainTextEdit->appendPlainText(" Server port: " + SettingConst::getInstance()->getPortConrol());
         if(!isTcpControlConnectedSignal){
-            connect(tcpControl, SIGNAL(getLog(QString)), ui->plainTextEdit, SLOT(appendPlainText(QString)));
+            connect(tcpControl, SIGNAL(getLog(QString)), this, SLOT(appendText(QString)));
             connect(tcpControl, SIGNAL(getError(QString)), this, SLOT(onErrorTcpSocket(QString)));
             connect(tcpControl, SIGNAL(getState(bool)), this, SLOT(onChangeStateServer(bool)));
             isTcpControlConnectedSignal = true;
@@ -137,15 +133,16 @@ void MainWindow::startGamepad()
         int deviceId = gamepadManager->connectedGamepads().length() >0 ? gamepadManager->connectedGamepads()[0] : -1;
         gamepad = new QGamepad(deviceId, this);
         if(gamepad->isConnected()) {
-            ui->plainTextEdit->appendPlainText("Геймпад подключён!");
+            appendText("Геймпад подключён!");
             connect(gamepad, SIGNAL(axisLeftXChanged(double)), this, SLOT(axisLeftXChanged(double)));
             connect(gamepad, SIGNAL(axisLeftYChanged(double)), this, SLOT(axisLeftYChanged(double)));
             connect(gamepad, SIGNAL(axisRightXChanged(double)), this, SLOT(axisRightXChanged(double)));
             connect(gamepad, SIGNAL(axisRightYChanged(double)), this, SLOT(axisRightYChanged(double)));
+
             startTimerForSendStickCommand();
         }
         else {
-            ui->plainTextEdit->appendPlainText("Подключите Геймпад!");
+            appendText("Подключите Геймпад!");
         }
     }
 }
@@ -233,12 +230,18 @@ void MainWindow::updateKeys()
     upKey = false;
 }
 
+void MainWindow::appendText(QString text)
+{
+    QTime currTime = QTime::currentTime();
+    ui->plainTextEdit->appendPlainText("[" + currTime.toString("hh:mm:ss") + "]: " + text);
+}
+
 void MainWindow::on_stop_clicked()
 {
     stopGamepad();
     stopSocket();
     stopMRVusual();
-    ui->plainTextEdit->appendPlainText("Все отключенно!");
+    appendText("Все отключенно!");
 }
 
 void MainWindow::stopGamepad()
@@ -264,8 +267,8 @@ void MainWindow::stopSocket()
     }
     if(isTcpControlConnectedSignal) {
         onChangeStateServer(false);
-        disconnect(tcpControl, SIGNAL(getLog(QString)), ui->plainTextEdit, SLOT(appendPlainText(QString)));
-        disconnect(tcpControl, SIGNAL(getError(QString)), ui->plainTextEdit, SLOT(appendPlainText(QString)));
+        disconnect(tcpControl, SIGNAL(getLog(QString)), this, SLOT(appendText(QString)));
+        disconnect(tcpControl, SIGNAL(getError(QString)), this, SLOT(onErrorTcpSocket(QString)));
         disconnect(tcpControl, SIGNAL(getState(bool)), this, SLOT(onChangeStateServer(bool)));
         isTcpControlConnectedSignal = false;
     }
