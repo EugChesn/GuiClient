@@ -61,7 +61,7 @@ void Dialog::startVideoThread()
 
 void Dialog::stopVideoThread()
 {
-    if(thVideo->isRunning())
+    if(start_Qthread)
         thVideo->exit(0);
 }
 void Dialog::onFrame(QImage frame)

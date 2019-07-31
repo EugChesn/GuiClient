@@ -436,6 +436,7 @@ void MainWindow::on_startCam_clicked()
 
     Dialog *mDialog = new Dialog(this);
     mDialog->show();
+
 }
 
 void MainWindow::on_setings_clicked()
