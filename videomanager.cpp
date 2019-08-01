@@ -1,9 +1,10 @@
 #include "videomanager.h"
+#include "settingconst.h"
 
 VideoManager::VideoManager()
 {
     timerHandler = new QTimer();
-    timerHandler->setInterval(20);
+    timerHandler->setInterval(SettingConst::getInstance()->getFrameMS());
     connect(timerHandler,SIGNAL(timeout()),this,SLOT(handleFrame()));
 }
 

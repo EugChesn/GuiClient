@@ -59,18 +59,8 @@ FORMS += \
         settings.ui
 
 
-INCLUDEPATH += C:\opencv\opencv\opencv-bin\install\include
-LIBS +=-L"C:\opencv\opencv\opencv-bin\install\x86\mingw\lib"
-LIBS +=  \
--lopencv_core410 \
--lopencv_highgui410 \
--lopencv_imgproc410 \
--lopencv_photo410 \
--lopencv_imgcodecs410 \
--lopencv_video410 \
--lopencv_videoio410 \
-#INCLUDEPATH += C:/OpenCv/opencv/opencv_bin/install/include/
-#LIBS +=-L"C:/OpenCv/opencv/opencv_bin/install/x86/mingw/lib/"
+#INCLUDEPATH += C:\opencv\opencv\opencv-bin\install\include
+#LIBS +=-L"C:\opencv\opencv\opencv-bin\install\x86\mingw\lib"
 #LIBS +=  \
 #-lopencv_core410 \
 #-lopencv_highgui410 \
@@ -78,7 +68,17 @@ LIBS +=  \
 #-lopencv_photo410 \
 #-lopencv_imgcodecs410 \
 #-lopencv_video410 \
-#-lopencv_videoio410
+#-lopencv_videoio410 \
+INCLUDEPATH += C:/OpenCv/opencv/opencv_bin/install/include/
+LIBS +=-L"C:/OpenCv/opencv/opencv_bin/install/x86/mingw/lib/"
+LIBS +=  \
+-lopencv_core410 \
+-lopencv_highgui410 \
+-lopencv_imgproc410 \
+-lopencv_photo410 \
+-lopencv_imgcodecs410 \
+-lopencv_video410 \
+-lopencv_videoio410
 
 
 
