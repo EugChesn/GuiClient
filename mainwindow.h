@@ -88,16 +88,20 @@ private:
     //SERVER
     void startServer();
     void stopSocket();
+    bool isTcpControlConnectedSignal = false;
+    bool isTcpControlConnected = false;
     //--------------------
 
     //Отображение положения в пространстве!!!
     void startMRVisual();
     void stopMRVusual();
+    bool isMRVisualConnectedSignal = false;
     //---------------------------------------
 
     //Отображение газов
     void startGaz();
     void stopGaz();
+    bool isGazConnectedSignal = false;
     //---------------------------------------
 
     //PING
@@ -107,14 +111,15 @@ private:
     //--------------------------
 
     //Управление
-    QLabel *redL,*redR;
-    bool upKey, downKey, rightKey, leftKey;
-    double axisLeftX=0, axisLeftY=0, axisRightX=0, axisRightY=0;
-    bool isTcpControlConnectedSignal = false, isGamepadConnectedSignal = false, isMRVisualConnectedSignal = false, isGazConnectedSignal = false;
-    bool isTcpControlConnected = false;
+    QLabel *redL,*redR; // красные квадратики
+    bool isGamepadConnectedSignal = false;
+
     void startGamepad();
     void stopGamepad();
-    void paintStick();
+    void paintStick(); //рисует красный квадратики на изображении геймпада
+
+    bool upKey, downKey, rightKey, leftKey;
+    double axisLeftX=0, axisLeftY=0, axisRightX=0, axisRightY=0;
     //--------------------------------------------------------------------
 };
 

@@ -16,7 +16,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    //Костыль!!
     paintStick();
 
     QGamepadManager * gamepadManager =  QGamepadManager::instance();
@@ -47,6 +46,16 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     int height = event->size().height();
 }
 
+
+void MainWindow::appendText(QString text)
+{
+    QTime currTime = QTime::currentTime();
+    ui->plainTextEdit->appendPlainText("[" + currTime.toString("hh:mm:ss") + "]: " + text);
+}
+
+
+
+//Button---------------------------------------------------------------------------
 void MainWindow::on_pushButton_clicked()
 {
     startServer();
@@ -55,6 +64,99 @@ void MainWindow::on_pushButton_clicked()
     startGaz();
 }
 
+void MainWindow::on_stop_clicked()
+{
+    stopGamepad();
+    stopSocket();
+    stopMRVusual();
+    stopGaz();
+    appendText("Все отключенно!");
+}
+
+void MainWindow::on_startCam_clicked()
+{
+    /*QThread * start_dialog = new QThread;
+    Dialog *mDialog = new Dialog(this);
+    mDialog->moveToThread(start_dialog);*/
+
+    Dialog *mDialog = new Dialog(this);
+    mDialog->show();
+
+}
+
+void MainWindow::on_setings_clicked()
+{
+    Settings *dialogSettings = new Settings(this);
+    dialogSettings->show();
+    if (dialogSettings->exec() == QDialog::Accepted) {
+        disconnect(pingServer, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_server()) );
+        disconnect(pingServer,SIGNAL(finished(int)),pingServer,SLOT(kill()));
+        disconnect(pingCamera1, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_camera1()) );
+        disconnect(pingCamera1,SIGNAL(finished(int)),pingCamera1,SLOT(kill()));
+        disconnect(pingCamera2, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_camera2()) );
+        disconnect(pingCamera2,SIGNAL(finished(int)),pingCamera2,SLOT(kill()));
+        disconnect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_server()));
+        disconnect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_camera1()));
+        disconnect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_camera2()));
+
+
+        startPing();
+
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Внимание!");
+        msgBox.setText("Настройки применены.");
+        msgBox.exec();
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+//SOCKET--------------------------------------------------------------------------------------
+void MainWindow::onErrorTcpSocket(QString error)
+{
+    if(!isTcpControlConnectedSignal) {
+        QString redText = "<span style=\" font-size:8pt; font-weight:600; color:#ff0000;\" >";
+        redText.append(error);
+        redText.append("</span>");
+        QTime currTime = QTime::currentTime();
+        ui->plainTextEdit->appendHtml("[" + currTime.toString("hh:mm:ss") + "]: " + redText);
+    }
+    if(isTcpControlConnectedSignal || isGamepadConnectedSignal)
+        QTimer::singleShot(250, this, SLOT(on_pushButton_clicked()));
+}
+
+void MainWindow::startServer()
+{
+    tcpControl = TcpControl::getInstance();
+    if(!isTcpControlConnected) {
+        tcpControl->connectToHost();
+        isTcpControlConnected = true;
+        if(!isTcpControlConnectedSignal){
+            connect(tcpControl, SIGNAL(getLog(QString)), this, SLOT(appendText(QString)));
+            connect(tcpControl, SIGNAL(getError(QString)), this, SLOT(onErrorTcpSocket(QString)));
+            connect(tcpControl, SIGNAL(getState(bool)), this, SLOT(onChangeStateServer(bool)));
+            isTcpControlConnectedSignal = true;
+            onChangeStateServer(true);
+            tcpControl->sendCommandUsingTimer();
+        }
+    }
+}
+
+void MainWindow::stopSocket()
+{
+    if(isTcpControlConnected) {
+        tcpControl->disconnect = true;
+        tcpControl->disconnectToHost();
+        isTcpControlConnected = false;
+    }
+    if(isTcpControlConnectedSignal) {
+        onChangeStateServer(false);
+        disconnect(tcpControl, SIGNAL(getLog(QString)), this, SLOT(appendText(QString)));
+        disconnect(tcpControl, SIGNAL(getError(QString)), this, SLOT(onErrorTcpSocket(QString)));
+        disconnect(tcpControl, SIGNAL(getState(bool)), this, SLOT(onChangeStateServer(bool)));
+        isTcpControlConnectedSignal = false;
+    }
+}
 void MainWindow::onChangeStateServer(bool state)
 {
     QString strState;
@@ -67,6 +169,46 @@ void MainWindow::onChangeStateServer(bool state)
         QPixmap pix(":/images/disconnect.png");
         ui->label_3->setPixmap(pix);
         strState = "disconnect";
+    }
+}
+//-------------------------------------------------------------------------------------
+
+//Gamepad------------------------------------------------------------------
+
+void MainWindow::startGamepad()
+{
+    if(!isGamepadConnectedSignal) {
+        isGamepadConnectedSignal = true;
+        redL->setVisible(true);
+        redR->setVisible(true);
+        QGamepadManager * gamepadManager =  QGamepadManager::instance();
+        int deviceId = gamepadManager->connectedGamepads().length() >0 ? gamepadManager->connectedGamepads()[0] : -1;
+        gamepad = new QGamepad(deviceId, this);
+        if(gamepad->isConnected()) {
+            appendText("Геймпад подключён!");
+            connect(gamepad, SIGNAL(axisLeftXChanged(double)), this, SLOT(axisLeftXChanged(double)));
+            connect(gamepad, SIGNAL(axisLeftYChanged(double)), this, SLOT(axisLeftYChanged(double)));
+            connect(gamepad, SIGNAL(axisRightXChanged(double)), this, SLOT(axisRightXChanged(double)));
+            connect(gamepad, SIGNAL(axisRightYChanged(double)), this, SLOT(axisRightYChanged(double)));
+
+            startTimerForSendStickCommand();
+        }
+        else {
+            appendText("Подключите Геймпад!");
+        }
+    }
+}
+void MainWindow::stopGamepad()
+{
+    if(isGamepadConnectedSignal) {
+        disconnect(gamepad, SIGNAL(axisLeftXChanged(double)), this, SLOT(axisLeftXChanged(double)));
+        disconnect(gamepad, SIGNAL(axisLeftYChanged(double)), this, SLOT(axisLeftYChanged(double)));
+        disconnect(gamepad, SIGNAL(axisRightXChanged(double)), this, SLOT(axisRightXChanged(double)));
+        disconnect(gamepad, SIGNAL(axisRightYChanged(double)), this, SLOT(axisRightYChanged(double)));
+        gamepad->deleteLater();
+        redL->setVisible(false);
+        redR->setVisible(false);
+        isGamepadConnectedSignal = false;
     }
 }
 
@@ -103,61 +245,6 @@ void MainWindow::axisRightYChanged(double value)
     redR->move((axisRightX*50)+75, (axisRightY*50)+75);
 }
 
-void MainWindow::onErrorTcpSocket(QString error)
-{
-    if(!isTcpControlConnectedSignal) {
-        QString redText = "<span style=\" font-size:8pt; font-weight:600; color:#ff0000;\" >";
-        redText.append(error);
-        redText.append("</span>");
-        QTime currTime = QTime::currentTime();
-        ui->plainTextEdit->appendHtml("[" + currTime.toString("hh:mm:ss") + "]: " + redText);
-    }
-    if(isTcpControlConnectedSignal || isGamepadConnectedSignal)
-        QTimer::singleShot(250, this, SLOT(on_pushButton_clicked()));
-}
-
-void MainWindow::startServer()
-{
-    tcpControl = TcpControl::getInstance();
-    if(!isTcpControlConnected) {
-        tcpControl->connectToHost();
-        isTcpControlConnected = true;
-        if(!isTcpControlConnectedSignal){
-            connect(tcpControl, SIGNAL(getLog(QString)), this, SLOT(appendText(QString)));
-            connect(tcpControl, SIGNAL(getError(QString)), this, SLOT(onErrorTcpSocket(QString)));
-            connect(tcpControl, SIGNAL(getState(bool)), this, SLOT(onChangeStateServer(bool)));
-            isTcpControlConnectedSignal = true;
-            onChangeStateServer(true);
-            tcpControl->sendCommandUsingTimer();
-        }
-    }
-}
-
-void MainWindow::startGamepad()
-{
-    if(!isGamepadConnectedSignal) {
-        isGamepadConnectedSignal = true;
-        redL->setVisible(true);
-        redR->setVisible(true);
-        QGamepadManager * gamepadManager =  QGamepadManager::instance();
-        int deviceId = gamepadManager->connectedGamepads().length() >0 ? gamepadManager->connectedGamepads()[0] : -1;
-        gamepad = new QGamepad(deviceId, this);
-        if(gamepad->isConnected()) {
-            appendText("Геймпад подключён!");
-            connect(gamepad, SIGNAL(axisLeftXChanged(double)), this, SLOT(axisLeftXChanged(double)));
-            connect(gamepad, SIGNAL(axisLeftYChanged(double)), this, SLOT(axisLeftYChanged(double)));
-            connect(gamepad, SIGNAL(axisRightXChanged(double)), this, SLOT(axisRightXChanged(double)));
-            connect(gamepad, SIGNAL(axisRightYChanged(double)), this, SLOT(axisRightYChanged(double)));
-
-            startTimerForSendStickCommand();
-        }
-        else {
-            appendText("Подключите Геймпад!");
-        }
-    }
-}
-
-
 void MainWindow::paintStick()
 {
     QPixmap pix(":/images/red.png");
@@ -180,110 +267,9 @@ void MainWindow::startTimerForSendStickCommand()
 
 }
 
+//----------------------------------------------------------------
 
-//bool MainWindow::eventFilter(QObject *obj, QEvent *event)
-//{
-//    if (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)
-//    {
-//        QKeyEvent* ke = static_cast<QKeyEvent*>(event);
-//        // bool b;
-//        //bool b = event->type() == QEvent::KeyPress;
 
-//        //bool b;
-//        //event->type() == QEvent::KeyPress ? b = true : b = false;
-
-//        switch(ke->key())
-//        {
-//            case Qt::Key_Up:
-//            upKey = true;
-//            break;
-//            case Qt::Key_Down:
-//            downKey = true;
-//            break;
-//            case Qt::Key_Right:
-//            rightKey = true;
-//            break;
-//            case Qt::Key_Left:
-//            leftKey = true;
-//            break;
-//        }
-//        updateKeys();
-//        return true;
-
-//    }
-
-//    return QObject::eventFilter(obj, event);
-//}
-//void MainWindow::updateKeys()
-//{
-//    QString text;
-//    if (upKey) {
-//        text.append("Up");
-//    }
-//    if (downKey) {
-//        text.append("Down");
-//    }
-//    if (rightKey) {
-
-//        text.append("Right");
-//    }
-//    if (leftKey) {
-
-//        text.append("Left");
-//    }
-//    qDebug() << text;
-//    ui->event_arrows->setText(text);
-
-//    leftKey = false;
-//    rightKey = false;
-//    downKey = false;
-//    upKey = false;
-//}
-
-void MainWindow::appendText(QString text)
-{
-    QTime currTime = QTime::currentTime();
-    ui->plainTextEdit->appendPlainText("[" + currTime.toString("hh:mm:ss") + "]: " + text);
-}
-
-void MainWindow::on_stop_clicked()
-{
-    stopGamepad();
-    stopSocket();
-    stopMRVusual();
-    stopGaz();
-    appendText("Все отключенно!");
-}
-
-void MainWindow::stopGamepad()
-{
-    if(isGamepadConnectedSignal) {
-        disconnect(gamepad, SIGNAL(axisLeftXChanged(double)), this, SLOT(axisLeftXChanged(double)));
-        disconnect(gamepad, SIGNAL(axisLeftYChanged(double)), this, SLOT(axisLeftYChanged(double)));
-        disconnect(gamepad, SIGNAL(axisRightXChanged(double)), this, SLOT(axisRightXChanged(double)));
-        disconnect(gamepad, SIGNAL(axisRightYChanged(double)), this, SLOT(axisRightYChanged(double)));
-        gamepad->deleteLater();
-        redL->setVisible(false);
-        redR->setVisible(false);
-        isGamepadConnectedSignal = false;
-    }
-}
-
-void MainWindow::stopSocket()
-{
-    if(isTcpControlConnected) {
-        tcpControl->disconnect = true;
-        tcpControl->disconnectToHost();
-        isTcpControlConnected = false;
-    }
-    if(isTcpControlConnectedSignal) {
-        onChangeStateServer(false);
-        disconnect(tcpControl, SIGNAL(getLog(QString)), this, SLOT(appendText(QString)));
-        disconnect(tcpControl, SIGNAL(getError(QString)), this, SLOT(onErrorTcpSocket(QString)));
-        disconnect(tcpControl, SIGNAL(getState(bool)), this, SLOT(onChangeStateServer(bool)));
-        isTcpControlConnectedSignal = false;
-    }
-}
 
 //MRVisual-----------------------------------------
 void MainWindow::startMRVisual()
@@ -343,9 +329,6 @@ void MainWindow::handleGaz(int g1, int g2, int g3, int g4)
 }
 //-------------------------------------------------
 
-
-
-//----------------------------------------------------
 
 //PING------------------------------------------------
 void MainWindow::startPing()
@@ -471,42 +454,3 @@ void MainWindow::print_ping_camera2()
     }
 }
 //--------------------------------------------------------------------------
-
-
-
-
-void MainWindow::on_startCam_clicked()
-{
-    /*QThread * start_dialog = new QThread;
-    Dialog *mDialog = new Dialog(this);
-    mDialog->moveToThread(start_dialog);*/
-
-    Dialog *mDialog = new Dialog(this);
-    mDialog->show();
-
-}
-
-void MainWindow::on_setings_clicked()
-{
-    Settings *dialogSettings = new Settings(this);
-    dialogSettings->show();
-    if (dialogSettings->exec() == QDialog::Accepted) {
-        disconnect(pingServer, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_server()) );
-        disconnect(pingServer,SIGNAL(finished(int)),pingServer,SLOT(kill()));
-        disconnect(pingCamera1, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_camera1()) );
-        disconnect(pingCamera1,SIGNAL(finished(int)),pingCamera1,SLOT(kill()));
-        disconnect(pingCamera2, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_camera2()) );
-        disconnect(pingCamera2,SIGNAL(finished(int)),pingCamera2,SLOT(kill()));
-        disconnect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_server()));
-        disconnect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_camera1()));
-        disconnect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_camera2()));
-
-
-        startPing();
-
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Внимание!");
-        msgBox.setText("Настройки применены.");
-        msgBox.exec();
-    }
-}
