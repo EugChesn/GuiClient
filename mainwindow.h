@@ -30,6 +30,7 @@ public:
 private slots:
     void on_pushButton_clicked();
     void on_stop_clicked();
+    void on_setings_clicked();
 
     void appendText(QString text);
 
@@ -51,7 +52,7 @@ private slots:
 
     void on_startCam_clicked();
 
-    void on_setings_clicked();
+
 
     //PING
     void ping_timer_server();
@@ -62,11 +63,19 @@ private slots:
     void print_ping_camera2();
     //---------------------
 
+    //MRVisual
     void handlerMRVisual(float x, float y, float z);
+    //------------------------------
+
+    //GAZ
+    void handleGaz(int g1, int g2, int g3, int g4);
+    //---------------
 protected:
     //для обработки клавиатуры
-    bool eventFilter(QObject *obj, QEvent *event);
-    void updateKeys();
+//    bool eventFilter(QObject *obj, QEvent *event);
+//    void updateKeys();
+
+    virtual void resizeEvent(QResizeEvent *event) override;
 
 
 private:
@@ -86,6 +95,11 @@ private:
     void stopMRVusual();
     //---------------------------------------
 
+    //Отображение газов
+    void startGaz();
+    void stopGaz();
+    //---------------------------------------
+
     //PING
     void startPing();
     QProcess *pingServer, *pingCamera1, *pingCamera2;
@@ -96,7 +110,7 @@ private:
     QLabel *redL,*redR;
     bool upKey, downKey, rightKey, leftKey;
     double axisLeftX=0, axisLeftY=0, axisRightX=0, axisRightY=0;
-    bool isTcpControlConnectedSignal = false, isGamepadConnectedSignal = false, isMRVisualConnectedSignal = false;
+    bool isTcpControlConnectedSignal = false, isGamepadConnectedSignal = false, isMRVisualConnectedSignal = false, isGazConnectedSignal = false;
     bool isTcpControlConnected = false;
     void startGamepad();
     void stopGamepad();

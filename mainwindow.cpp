@@ -22,12 +22,15 @@ MainWindow::MainWindow(QWidget *parent) :
     QGamepadManager * gamepadManager =  QGamepadManager::instance();
     int deviceId = gamepadManager->connectedGamepads().length() >0 ? gamepadManager->connectedGamepads()[0] : -1;
     gamepad = new QGamepad(deviceId, this);
-    installEventFilter(this);
-    upKey = downKey = rightKey = leftKey = false;
+//    installEventFilter(this);
+//    upKey = downKey = rightKey = leftKey = false;
+
+
 
     //START PING
     startPing();
     //----------
+
 }
 
 MainWindow::~MainWindow()
@@ -38,11 +41,18 @@ MainWindow::~MainWindow()
     delete timer;
 }
 
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    int width = event->size().width();
+    int height = event->size().height();
+}
+
 void MainWindow::on_pushButton_clicked()
 {
     startServer();
     startGamepad();
     startMRVisual();
+    startGaz();
 }
 
 void MainWindow::onChangeStateServer(bool state)
@@ -171,64 +181,64 @@ void MainWindow::startTimerForSendStickCommand()
 }
 
 
-bool MainWindow::eventFilter(QObject *obj, QEvent *event)
-{
-    if (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)
-    {
-        QKeyEvent* ke = static_cast<QKeyEvent*>(event);
-        // bool b;
-        //bool b = event->type() == QEvent::KeyPress;
+//bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+//{
+//    if (event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)
+//    {
+//        QKeyEvent* ke = static_cast<QKeyEvent*>(event);
+//        // bool b;
+//        //bool b = event->type() == QEvent::KeyPress;
 
-        //bool b;
-        //event->type() == QEvent::KeyPress ? b = true : b = false;
+//        //bool b;
+//        //event->type() == QEvent::KeyPress ? b = true : b = false;
 
-        switch(ke->key())
-        {
-            case Qt::Key_Up:
-            upKey = true;
-            break;
-            case Qt::Key_Down:
-            downKey = true;
-            break;
-            case Qt::Key_Right:
-            rightKey = true;
-            break;
-            case Qt::Key_Left:
-            leftKey = true;
-            break;
-        }
-        updateKeys();
-        return true;
+//        switch(ke->key())
+//        {
+//            case Qt::Key_Up:
+//            upKey = true;
+//            break;
+//            case Qt::Key_Down:
+//            downKey = true;
+//            break;
+//            case Qt::Key_Right:
+//            rightKey = true;
+//            break;
+//            case Qt::Key_Left:
+//            leftKey = true;
+//            break;
+//        }
+//        updateKeys();
+//        return true;
 
-    }
+//    }
 
-    return QObject::eventFilter(obj, event);
-}
-void MainWindow::updateKeys()
-{
-    QString text;
-    if (upKey) {
-        text.append("Up");
-    }
-    if (downKey) {
-        text.append("Down");
-    }
-    if (rightKey) {
+//    return QObject::eventFilter(obj, event);
+//}
+//void MainWindow::updateKeys()
+//{
+//    QString text;
+//    if (upKey) {
+//        text.append("Up");
+//    }
+//    if (downKey) {
+//        text.append("Down");
+//    }
+//    if (rightKey) {
 
-        text.append("Right");
-    }
-    if (leftKey) {
+//        text.append("Right");
+//    }
+//    if (leftKey) {
 
-        text.append("Left");
-    }
-    qDebug() << text;
-    ui->event_arrows->setText(text);
+//        text.append("Left");
+//    }
+//    qDebug() << text;
+//    ui->event_arrows->setText(text);
 
-    leftKey = false;
-    rightKey = false;
-    downKey = false;
-    upKey = false;
-}
+//    leftKey = false;
+//    rightKey = false;
+//    downKey = false;
+//    upKey = false;
+//}
 
 void MainWindow::appendText(QString text)
 {
@@ -241,6 +251,7 @@ void MainWindow::on_stop_clicked()
     stopGamepad();
     stopSocket();
     stopMRVusual();
+    stopGaz();
     appendText("Все отключенно!");
 }
 
@@ -279,6 +290,7 @@ void MainWindow::startMRVisual()
 {
     if(!isMRVisualConnectedSignal) {
         mrVisual = new MRVisualLib(this);
+        mrVisual->setGeometry(300,300,300,300);
         connect(tcpControl, SIGNAL(getPositionInSpase(float,float,float)), this, SLOT(handlerMRVisual(float,float,float)));
         ui->gridLayoutMRVisual->addWidget(mrVisual);
         isMRVisualConnectedSignal = true;
@@ -293,12 +305,47 @@ void MainWindow::stopMRVusual()
         isMRVisualConnectedSignal = false;
     }
 }
-
 void MainWindow::handlerMRVisual(float x, float y, float z)
 {
     mrVisual->rotate(x,y,z);
 }
-//-------------------------------------
+
+
+//-------------------------------------------------------------------
+
+//GAZ-------------------------------------------------
+void MainWindow::startGaz()
+{
+    if(!isGazConnectedSignal) {
+        connect(tcpControl, SIGNAL(getGaz(int,int,int, int)), this, SLOT(handleGaz(int,int,int, int)));
+        isGazConnectedSignal = true;
+    }
+}
+
+void MainWindow::stopGaz()
+{
+    if(isGazConnectedSignal) {
+        disconnect(tcpControl, SIGNAL(getGaz(int,int,int, int)), this, SLOT(handleGaz(int,int,int, int)));
+        ui->lcdGaz1->display(QString::number(0) + "%");
+        ui->lcdGaz2->display(QString::number(0) + "%");
+        ui->lcdGaz3->display(QString::number(0) + "%");
+        ui->lcdGaz4->display(QString::number(0) + "%");
+        isGazConnectedSignal = false;
+    }
+}
+
+void MainWindow::handleGaz(int g1, int g2, int g3, int g4)
+{
+    ui->lcdGaz1->display(QString::number(g1) + "%");
+    ui->lcdGaz2->display(QString::number(g2) + "%");
+    ui->lcdGaz3->display(QString::number(g3) + "%");
+    ui->lcdGaz4->display(QString::number(g4) + "%");
+}
+//-------------------------------------------------
+
+
+
+//----------------------------------------------------
 
 //PING------------------------------------------------
 void MainWindow::startPing()
@@ -423,7 +470,7 @@ void MainWindow::print_ping_camera2()
         }
     }
 }
-//------------------------------------------------------------------
+//--------------------------------------------------------------------------
 
 
 

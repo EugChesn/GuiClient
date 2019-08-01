@@ -37,6 +37,7 @@ signals:
     void getCommand(double axisLeftX = 0, double axisLeftY = 0, double axisRightX = 0, double axisRightY = 0);
     void getState(bool state);
     void getPositionInSpase(float x, float y, float z);
+    void getGaz(int g1, int g2, int g3, int g4);
 
 
 
@@ -46,7 +47,7 @@ public slots:
     //void incommingConnection(); // обработчик входящего подключения
     void readyRead(); // обработчик входящих данных
     QAbstractSocket::SocketState stateChanged(QAbstractSocket::SocketState state); // обработчик изменения состояния вещающего
-    QAbstractSocket::SocketError onError(QAbstractSocket::SocketError socketError);
+    void onError(QAbstractSocket::SocketError socketError);
     void connected();
     void disconnected();
     void hostFound();

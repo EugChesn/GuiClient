@@ -51,11 +51,13 @@ void TcpControl::setCommand(double axisLeftX, double axisLeftY, double axisRight
 }
 void TcpControl::sendCommand(/*double axisLeftX, double axisLeftY, double axisRightX, double axisRightY*/)
 {
-    QByteArray byteArray;
-    QString command = "MOVE=lx:" + QString::number((axisLeftX)) + ",ly:" + QString::number((axisLeftY)) + ",rx:" + QString::number((axisRightX)) + ",ry:" + QString::number((axisRightY)) + ";";
-    byteArray = command.toUtf8();
-    socket->write(byteArray);
-    socket->flush();
+    if(socket->isOpen() && socket->isWritable()) {
+        QByteArray byteArray;
+        QString command = "MOVE=lx:" + QString::number((axisLeftX)) + ",ly:" + QString::number((axisLeftY)) + ",rx:" + QString::number((axisRightX)) + ",ry:" + QString::number((axisRightY)) + ";";
+        byteArray = command.toUtf8();
+        socket->write(byteArray);
+        socket->flush();
+    }
 }
 
 TcpControl::TcpControl(QObject *parent) : QObject(parent)
@@ -111,6 +113,7 @@ void TcpControl::readyRead()
 {
     QByteArray data = socket->readAll();
     QString commandServer = data;
+    commandServer = commandServer.split(";").at(0);
     //qDebug() << "SERVER SEND:" << commandServer;
     if(commandServer.contains("POS=")) {
         int pos = 0;
@@ -124,6 +127,22 @@ void TcpControl::readyRead()
         float y = !line.at(1).isNull()? line.at(1).toFloat() > 0? line.at(1).toFloat() : 0 : 0;
         float z = !line.at(2).isNull()? line.at(2).toFloat() > 0? line.at(2).toFloat() : 0 : 0;
         emit getPositionInSpase(x,y,z);
+    }
+    if(commandServer.contains("GAZ=")) {
+        int pos = 0;
+        QRegExp rx("((\\d{1,3}))");
+        QStringList line;
+        while ((pos = rx.indexIn(commandServer, pos)) != -1) {
+            line.append(rx.cap(1));
+            pos += rx.matchedLength();
+        }
+        int g1 = !line.at(0).isNull()? line.at(0).toInt() > 0? line.at(0).toInt() : 0 : 0;
+        int g2 = !line.at(1).isNull()? line.at(1).toInt() > 0? line.at(1).toInt() : 0 : 0;
+        int g3 = !line.at(2).isNull()? line.at(2).toInt() > 0? line.at(2).toInt() : 0 : 0;
+        int g4 = !line.at(3).isNull()? line.at(3).toInt() > 0? line.at(3).toInt() : 0 : 0;
+        qDebug() << commandServer;
+        qDebug() << line;
+        emit getGaz(g1,g2,g3,g4);
     }
     socket->flush();
 }
@@ -147,18 +166,15 @@ QAbstractSocket::SocketState TcpControl::stateChanged(QAbstractSocket::SocketSta
     return state;
 }
 
-QAbstractSocket::SocketError TcpControl::onError(QAbstractSocket::SocketError error)
+void TcpControl::onError(QAbstractSocket::SocketError error)
 {
     QString strErorr = "SOCKET ERROR: " + QVariant::fromValue(error).toString() + " dis: " +disconnect;
     qDebug() << strErorr;
     if(!disconnect){
         emit getError(strErorr);
-        //disconnect = false;
+        disconnect = true;
     }
     emit getState(false);
-//    if(!socket->reset())
-//        resetConnect();
-    return error;
 }
 
 void TcpControl::connected()
