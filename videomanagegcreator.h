@@ -13,11 +13,13 @@ public:
     //explicit VideoManagegCreator(QObject *parent = nullptr);
     VideoManagegCreator();
     VideoManager * getManager();
-~VideoManagegCreator();
+    ~VideoManagegCreator();
 
 signals:
+    void sendFrame(QImage);
 public slots:
     void create();
+    void onFrame(QImage);
 };
 
 #endif // VIDEOMANAGEGCREATOR_H

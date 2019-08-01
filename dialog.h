@@ -9,6 +9,7 @@
 #include <opencv2/highgui.hpp>
 #include <QProcess>
 #include <QThread>
+#include <QtCore>
 #include "videomanagegcreator.h"
 
 namespace Ui {

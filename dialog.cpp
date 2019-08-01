@@ -55,14 +55,16 @@ void Dialog::startVideoThread()
     QObject::connect(thVideo, SIGNAL(started()), vidManagerCreator, SLOT(create()));
     QObject::connect(thVideo, SIGNAL(finished()), vidManagerCreator, SLOT(deleteLater()));
 
-    while(!vidManagerCreator->getManager()) { }
-    QObject::connect(vidManagerCreator->getManager(),SIGNAL(frameReady(QImage)),this,SLOT(onFrame(QImage)));
+    //while(!vidManagerCreator->getManager()) { }
+    QObject::connect(vidManagerCreator,SIGNAL(sendFrame(QImage)),this,SLOT(onFrame(QImage)));
+
 }
 
 void Dialog::stopVideoThread()
 {
     if(start_Qthread)
         thVideo->exit(0);
+
 }
 void Dialog::onFrame(QImage frame)
 {
