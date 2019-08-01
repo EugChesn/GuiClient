@@ -7,6 +7,7 @@
 #include <QImage>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
+#include "settingconst.h"
 
 class VideoManager : public QObject
 {
@@ -20,6 +21,14 @@ private:
     QTimer * timerHandler;
     cv::VideoCapture vc;
     QImage *qimgOriginal;
+    std::string adress = ("rtsp://"+ SettingConst::getInstance()->getLoginIpCamera1()
+                          + ":"
+                          + SettingConst::getInstance()->getPasswordIpcamera1()
+                          +"@"
+                          + SettingConst::getInstance()->getIpCamera1() +
+                          ":"
+                          + SettingConst::getInstance()->getPortCamera1()).toStdString();
+
 
 signals:
     void frameReady(QImage);
