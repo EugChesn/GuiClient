@@ -19,7 +19,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    TcpControl* tcpControl;
+    TcpControl *tcpControl;
     QGamepad *gamepad;
 
     MRVisualLib *mrVisual;
