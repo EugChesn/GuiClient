@@ -21,28 +21,27 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     TcpControl *tcpControl;
     QGamepad *gamepad;
-
     MRVisualLib *mrVisual;
     //OpenCvCam *openCam;
 
 
     ~MainWindow();
 private slots:
-    void on_pushButton_clicked();
+    void on_pushButton_clicked(); // это кнопка старт
     void on_stop_clicked();
-    void on_setings_clicked();
+    void on_setings_clicked(); // открыть диалоговое окно с настройками
 
-    void appendText(QString text);
+    void appendText(QString text); // вывод в plainText
 
     //для геймпада
-    void sendStickCommand();
-    void axisLeftXChanged(double value);
+    void sendStickCommand(); // отправить их в сокет
+    void axisLeftXChanged(double value); // получить изменение положения стиков
     void axisLeftYChanged(double value);
     void axisRightXChanged(double value);
-    void axisRightYChanged(double value);
+    void axisRightYChanged(double value); // ------
     //------------------------
     //для сокета
-    void onChangeStateServer(bool state);
+    void onChangeStateServer(bool state); //мменяет картинку соеденения с сервером connect.png
     void onErrorTcpSocket(QString string);
     //------------------------------------
 
@@ -62,6 +61,12 @@ private slots:
     void print_ping_camera1();
     void print_ping_camera2();
     //---------------------
+
+    //Battery
+    void handlerBataryServer(int x);
+    void handlerBataryCamera1(int x);
+    void handlerBataryCamera2(int x);
+    //Battery
 
     //MRVisual
     void handlerMRVisual(float x, float y, float z);
@@ -97,6 +102,18 @@ private:
     void stopMRVusual();
     bool isMRVisualConnectedSignal = false;
     //---------------------------------------
+
+    //Battery
+    void startBatteryServer();
+    bool isBatteryServerSignal = false;
+    void startBatteryCamera1();
+    bool isBatteryCamera1Signal = false;
+    void startBatteryCamera2();
+    bool isBatteryCamera2Signal = false;
+    void stopBatteryServer();
+    void stopBatteryCamera1();
+    void stopBatteryCamera2();
+    //---------------------
 
     //Отображение газов
     void startGaz();

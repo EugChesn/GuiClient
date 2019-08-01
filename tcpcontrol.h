@@ -31,6 +31,9 @@ signals:
     void getState(bool state);
     void getPositionInSpase(float x, float y, float z);
     void getGaz(int g1, int g2, int g3, int g4);
+    void getBattaryServer(int x);
+    void getBattaryCamera1(int x);
+    void getBattaryCamera2(int x);
 
 
 

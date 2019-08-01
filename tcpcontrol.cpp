@@ -144,6 +144,23 @@ void TcpControl::readyRead()
         qDebug() << line;
         emit getGaz(g1,g2,g3,g4);
     }
+    if(commandServer.contains("BAT=")) {
+        int pos = 0;
+        QRegExp rx("((\\d{1,3}))");
+        QStringList line;
+        while ((pos = rx.indexIn(commandServer, pos)) != -1) {
+            line.append(rx.cap(1));
+            pos += rx.matchedLength();
+        }
+        int bs = !line.at(0).isNull()? line.at(0).toInt() > 0? line.at(0).toInt() : 0 : 0;
+        int bc1 = !line.at(1).isNull()? line.at(1).toInt() > 0? line.at(1).toInt() : 0 : 0;
+        int bc2 = !line.at(2).isNull()? line.at(2).toInt() > 0? line.at(2).toInt() : 0 : 0;
+        qDebug() << commandServer;
+        qDebug() << line;
+        emit getBattaryServer(bs);
+        emit getBattaryCamera1(bc1);
+        emit getBattaryCamera2(bc2);
+    }
     socket->flush();
 }
 

@@ -62,6 +62,9 @@ void MainWindow::on_pushButton_clicked()
     startGamepad();
     startMRVisual();
     startGaz();
+    startBatteryServer();
+    startBatteryCamera1();
+    startBatteryCamera2();
 }
 
 void MainWindow::on_stop_clicked()
@@ -70,6 +73,9 @@ void MainWindow::on_stop_clicked()
     stopSocket();
     stopMRVusual();
     stopGaz();
+    stopBatteryServer();
+    stopBatteryCamera1();
+    stopBatteryCamera2();
     appendText("Все отключенно!");
 }
 
@@ -291,6 +297,8 @@ void MainWindow::stopMRVusual()
         isMRVisualConnectedSignal = false;
     }
 }
+
+
 void MainWindow::handlerMRVisual(float x, float y, float z)
 {
     mrVisual->rotate(x,y,z);
@@ -452,5 +460,68 @@ void MainWindow::print_ping_camera2()
             ui->pictureCamera2Ping->setPixmap(pix);
         }
     }
+}
+//--------------------------------------------------------------------------
+
+
+//BATTERY --------------------------------------------------------
+void MainWindow::startBatteryServer()
+{
+    if(!isBatteryServerSignal) {
+        isBatteryServerSignal = true;
+        connect(tcpControl, SIGNAL(getBattaryServer(int)), this, SLOT(handlerBataryServer(int)));
+    }
+}
+
+void MainWindow::startBatteryCamera1()
+{
+    if(!isBatteryCamera1Signal) {
+        isBatteryCamera1Signal = true;
+        connect(tcpControl, SIGNAL(getBattaryCamera1(int)), this, SLOT(handlerBataryCamera1(int)));
+    }
+}
+
+void MainWindow::startBatteryCamera2()
+{
+    if(!isBatteryCamera2Signal) {
+        isBatteryCamera2Signal = true;
+        connect(tcpControl, SIGNAL(getBattaryCamera2(int)), this, SLOT(handlerBataryCamera2(int)));
+    }
+}
+
+void MainWindow::stopBatteryServer()
+{
+    if(isBatteryServerSignal) {
+        isBatteryServerSignal = false;
+        disconnect(tcpControl, SIGNAL(getBattaryServer(int)), this, SLOT(handlerBataryServer(int)));
+    }
+}
+
+void MainWindow::stopBatteryCamera1()
+{
+    if(isBatteryCamera1Signal) {
+        isBatteryCamera1Signal = false;
+        disconnect(tcpControl, SIGNAL(getBattaryCamera1(int)), this, SLOT(handlerBataryCamera1(int)));
+    }
+}
+
+void MainWindow::stopBatteryCamera2()
+{
+    if(isBatteryCamera2Signal) {
+        isBatteryCamera2Signal = false;
+        disconnect(tcpControl, SIGNAL(getBattaryCamera2(int)), this, SLOT(handlerBataryCamera2(int)));
+    }
+}
+
+void MainWindow::handlerBataryServer(int x) {
+    ui->lcdbatteryServer->display(x);
+}
+
+void MainWindow::handlerBataryCamera1(int x) {
+    ui->lcdbatteryCamera1->display(x);
+}
+
+void MainWindow::handlerBataryCamera2(int x) {
+    ui->lcdbatteryCamera2->display(x);
 }
 //--------------------------------------------------------------------------
