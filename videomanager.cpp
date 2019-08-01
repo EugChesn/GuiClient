@@ -1,5 +1,4 @@
 #include "videomanager.h"
-#include "settingconst.h"
 
 VideoManager::VideoManager()
 {
@@ -32,7 +31,14 @@ void VideoManager::handleFrame()
 
 void VideoManager::start()
 {
-    vc.open("rtsp://admin:123456@192.168.1.13:554");
+    adress =("rtsp://"+ SettingConst::getInstance()->getLoginIpCamera1()
+                              + ":"
+                              + SettingConst::getInstance()->getPasswordIpcamera1()
+                              +"@"
+                              + SettingConst::getInstance()->getIpCamera1() +
+                              ":"
+                              + SettingConst::getInstance()->getPortCamera1()).toStdString();
+    vc.open(adress);
     timerHandler->start();
 }
 void VideoManager::stop()
