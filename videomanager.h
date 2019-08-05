@@ -14,20 +14,14 @@ class VideoManager : public QObject
     Q_OBJECT
 public:
     //explicit VideoManager(QObject *parent = nullptr);
-    VideoManager();
+    VideoManager(std::string);
     ~VideoManager();
 
 private:
     QTimer * timerHandler;
     cv::VideoCapture vc;
     QImage *qimgOriginal;
-    std::string adress = ("rtsp://"+ SettingConst::getInstance()->getLoginIpCamera1()
-                          + ":"
-                          + SettingConst::getInstance()->getPasswordIpcamera1()
-                          +"@"
-                          + SettingConst::getInstance()->getIpCamera1() +
-                          ":"
-                          + SettingConst::getInstance()->getPortCamera1()).toStdString();
+    std::string adress;
 
 
 signals:

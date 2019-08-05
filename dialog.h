@@ -30,8 +30,11 @@ private:
     Ui::Dialog *ui;
 
     VideoManagegCreator * vidManagerCreator;
+    VideoManagegCreator * vidManagerCreator2;
     QThread * thVideo;
+    QThread * thVideo2;
     bool start_Qthread;
+    bool start_Qthread2;
 
     /*cv::VideoCapture cam;
     double dWidth;
@@ -70,6 +73,7 @@ public slots:
     //void finished();
 
     void onFrame(QImage frame);
+    void onFrame2(QImage frame);
 
 private slots:
     void on_pushButton_clicked();

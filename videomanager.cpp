@@ -1,7 +1,8 @@
 #include "videomanager.h"
 
-VideoManager::VideoManager()
+VideoManager::VideoManager(std::string adress)
 {
+    this->adress = adress;
     timerHandler = new QTimer();
     timerHandler->setInterval(SettingConst::getInstance()->getFrameMS());
     connect(timerHandler,SIGNAL(timeout()),this,SLOT(handleFrame()));
@@ -29,15 +30,9 @@ void VideoManager::handleFrame()
     emit frameReady(qimgOriginal->copy());
 }
 
-void VideoManager::start()
+void VideoManager::start() //Настройки зависит от номера камеры (нужно при запуске передать)
 {
-    adress =("rtsp://"+ SettingConst::getInstance()->getLoginIpCamera1()
-                              + ":"
-                              + SettingConst::getInstance()->getPasswordIpcamera1()
-                              +"@"
-                              + SettingConst::getInstance()->getIpCamera1() +
-                              ":"
-                              + SettingConst::getInstance()->getPortCamera1()).toStdString();
+    qDebug() <<"adress: "<< QString::fromStdString(adress);
     vc.open(adress);
     timerHandler->start();
 }

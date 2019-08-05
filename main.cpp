@@ -10,8 +10,5 @@ int main(int argc, char *argv[])
     SettingConst::getInstance()->readSettingFromFile();
     w.show();
 
-
-
-
     return a.exec();
 }

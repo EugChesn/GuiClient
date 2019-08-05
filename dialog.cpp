@@ -13,6 +13,7 @@ Dialog::Dialog(QWidget *parent) :
 {
     ui->setupUi(this);
     start_Qthread = false;
+    start_Qthread2 = false;
 
    /* VideoThread * thVid = new VideoThread(this);
     connect(thVid,SIGNAL(send_frame(QImage *)),this,SLOT(processFrameAndUpdateGui(QImage *)));
@@ -29,48 +30,68 @@ Dialog::~Dialog()
     delete ui;
     if(start_Qthread)
         thVideo->~QThread();
+    if(start_Qthread2)
+        thVideo2->~QThread();
 }
 
 void Dialog::closeEvent(QCloseEvent *)
 {
     parentWidget()->show();
-    if(start_Qthread)
+    if(start_Qthread && start_Qthread2)
     {
-         thVideo->exit(0);
-         while(!thVideo->isFinished()) {}
+         thVideo->exit(0); thVideo2->exit(0);
+         while(!thVideo->isFinished() && !thVideo2->isFinished()) {}
     }
     start_Qthread = false;
+    start_Qthread2 = false;
     this->~Dialog();
 }
 
 
 void Dialog::startVideoThread()
 {
-    thVideo = new QThread;
-    vidManagerCreator = new VideoManagegCreator();
+    thVideo = new QThread; // camera 1
+    vidManagerCreator = new VideoManagegCreator(1);
     vidManagerCreator->moveToThread(thVideo);
+
+    thVideo2 = new QThread; //camera 2
+    vidManagerCreator2 = new VideoManagegCreator(2);
+    vidManagerCreator2->moveToThread(thVideo2);
 
     thVideo->start();
     start_Qthread = true;
+
+    thVideo2->start();
+    start_Qthread2 = true;
+
     QObject::connect(thVideo, SIGNAL(started()), vidManagerCreator, SLOT(create()));
     QObject::connect(thVideo, SIGNAL(finished()), vidManagerCreator, SLOT(deleteLater()));
-
-    //while(!vidManagerCreator->getManager()) { }
     QObject::connect(vidManagerCreator,SIGNAL(sendFrame(QImage)),this,SLOT(onFrame(QImage)));
 
+    QObject::connect(thVideo2, SIGNAL(started()), vidManagerCreator2, SLOT(create()));
+    QObject::connect(thVideo2, SIGNAL(finished()), vidManagerCreator2, SLOT(deleteLater()));
+    QObject::connect(vidManagerCreator2,SIGNAL(sendFrame(QImage)),this, SLOT(onFrame2(QImage)));
 }
 
 void Dialog::stopVideoThread()
 {
     if(start_Qthread)
         thVideo->exit(0);
-
+    if(start_Qthread2)
+        thVideo2->exit(0);
 }
 void Dialog::onFrame(QImage frame)
 {
     int w = ui->label->width();
     int h = ui->label->height();
     ui->label->setPixmap(QPixmap::fromImage(frame.rgbSwapped()).scaled(w,h,Qt::KeepAspectRatio));
+}
+
+void Dialog::onFrame2(QImage frame)
+{
+    int w = ui->label_2->width();
+    int h = ui->label_2->height();
+    ui->label_2->setPixmap(QPixmap::fromImage(frame.rgbSwapped()).scaled(w,h,Qt::KeepAspectRatio));
 }
 void Dialog::on_pushButton_clicked()
 {

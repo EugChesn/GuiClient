@@ -9,9 +9,11 @@ class VideoManagegCreator : public QObject
     Q_OBJECT
     VideoManager * vidManager;
 
+private:
+    int num_cam;
 public:
     //explicit VideoManagegCreator(QObject *parent = nullptr);
-    VideoManagegCreator();
+    VideoManagegCreator(int number_cam);
     VideoManager * getManager();
     ~VideoManagegCreator();
 
