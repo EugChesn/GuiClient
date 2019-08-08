@@ -64,7 +64,6 @@ private:
     QString passwordIpCamera2 = "123456";
 
     int frameMS = 100;
-
     int pingMS = 2000;
 
 

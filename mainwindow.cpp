@@ -27,17 +27,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     //START PING
-    startPing();
+    //startPing();
     //----------
 
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
     delete tcpControl;
     delete gamepad;
     delete timer;
+    delete this->mrVisual;
+    delete ui;
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)

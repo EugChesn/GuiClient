@@ -20,6 +20,10 @@ public:
     void resetConnect(); // хотела быть фичей, но стала багом, поэтому не используется
     bool disconnect; // как же без неё? bool всегда надежно!
 
+
+    QByteArray compressData(const QVariant &var);
+    //QVariant uncompressData(const QByteArray &data);
+
     //destructor
     ~TcpControl();
 
@@ -53,6 +57,7 @@ public slots:
 
 private:
     QTcpSocket *socket;
+    quint16     m_nNextBlockSize;
 
     //constructor
     static TcpControl *instance;
@@ -63,6 +68,8 @@ private:
     QTimer *timer;
 
     QByteArray intToArray(quint32 source); // лишняя функция для подсчета кол-ва отправляемых данных
+
+    void socketSendMessage(const QVariant &var);
 
     std::atomic_int axisLeftX, axisLeftY, axisRightX, axisRightY; // стики геймпада для отправки на сервер. Они Атомарные, вдруг будет многопоточность.
 };

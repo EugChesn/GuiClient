@@ -25,7 +25,7 @@ public:
     //OpenCvCam *openCam;
 
 
-    ~MainWindow();
+    ~MainWindow() override;
 private slots:
     void on_pushButton_clicked(); // это кнопка старт
     void on_stop_clicked();

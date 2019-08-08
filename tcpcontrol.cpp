@@ -1,5 +1,6 @@
 #include "settingconst.h"
 #include "tcpcontrol.h"
+#include <iostream>
 
 TcpControl* TcpControl::instance = nullptr;
 
@@ -13,6 +14,7 @@ TcpControl* TcpControl::getInstance()
 void TcpControl::connectToHost()
 {
     socket->connectToHost(SettingConst::getInstance()->getIpConrol(), SettingConst::getInstance()->getPortConrol());
+    //socket->write("Hello");
     state = true;
     emit getState(true);
     //emit getLog(" Socket connect to host");
@@ -39,7 +41,16 @@ void TcpControl::resetConnect()
 //        connectToHost();
 //        emit getLog(" Socket reset");
 //    }
-//    emit getLog(" Socket not reset");
+    //    emit getLog(" Socket not reset");
+}
+
+QByteArray TcpControl::compressData(const QVariant &var)
+{
+    QByteArray data;
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    stream.setVersion(QDataStream::Qt_DefaultCompiledVersion);
+    stream << var;
+    return qCompress(data, 4);
 }
 
 void TcpControl::setCommand(double axisLeftX, double axisLeftY, double axisRightX, double axisRightY)
@@ -51,17 +62,28 @@ void TcpControl::setCommand(double axisLeftX, double axisLeftY, double axisRight
 }
 void TcpControl::sendCommand(/*double axisLeftX, double axisLeftY, double axisRightX, double axisRightY*/)
 {
-    if(socket->isOpen() && socket->isWritable()) {
+    /*if(socket->isOpen() && socket->isWritable()) {
         QByteArray byteArray;
         QString command = "MOVE=lx:" + QString::number((axisLeftX)) + ",ly:" + QString::number((axisLeftY)) + ",rx:" + QString::number((axisRightX)) + ",ry:" + QString::number((axisRightY)) + ";";
         byteArray = command.toUtf8();
         socket->write(byteArray);
         socket->flush();
-    }
+    }*/
+    /*QByteArray data;
+    QString command = "MOVE=lx:" + QString::number((axisLeftX)) + ",ly:" + QString::number((axisLeftY)) + ",rx:" + QString::number((axisRightX)) + ",ry:" + QString::number((axisRightY)) + ";";
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    stream.setVersion(QDataStream::Qt_DefaultCompiledVersion);
+    QVariant tmp_data = command.toUtf8();
+    stream << (tmp_data);
+    socket->write(data);*/
+    QString command = "MOVE=lx:" + QString::number((axisLeftX)) + ",ly:" + QString::number((axisLeftY)) + ",rx:" + QString::number((axisRightX)) + ",ry:" + QString::number((axisRightY)) + ";";
+    QTextStream stream_str(socket);
+    stream_str << command.toUtf8();
 }
 
 TcpControl::TcpControl(QObject *parent) : QObject(parent)
 {
+    m_nNextBlockSize = 0;
     //server = new QTcpServer(this);
     socket = new QTcpSocket(this);
     QString log = " Socket init";
@@ -78,6 +100,7 @@ TcpControl::TcpControl(QObject *parent) : QObject(parent)
     this->axisLeftY = 0;
     this->axisRightX = 0;
     this->axisRightY = 0;
+
 }
 
 QByteArray TcpControl::intToArray(quint32 source)
@@ -86,6 +109,18 @@ QByteArray TcpControl::intToArray(quint32 source)
    QDataStream data(&temp, QIODevice::ReadWrite);
    data << source;
    return temp;
+}
+
+void TcpControl::socketSendMessage(const QVariant &var)
+{
+    QByteArray data;
+
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    stream.setVersion(QDataStream::Qt_DefaultCompiledVersion);
+
+    stream << (var);
+
+    socket->write(data);
 }
 
 TcpControl::~TcpControl() {
@@ -113,8 +148,8 @@ void TcpControl::readyRead()
 {
     QByteArray data = socket->readAll();
     QString commandServer = data;
+    qDebug() << "SERVER SEND:" << commandServer;
     commandServer = commandServer.split(";").at(0);
-    //qDebug() << "SERVER SEND:" << commandServer;
     if(commandServer.contains("POS=")) {
         int pos = 0;
         QRegExp rx("((\\d{1,3}\\.\\d{1,3})|(\\d{1,3}))");
@@ -199,6 +234,7 @@ void TcpControl::connected()
     emit getState(true);
     state = true;
     emit getLog(" Socket connected!");
+
 }
 
 void TcpControl::disconnected()

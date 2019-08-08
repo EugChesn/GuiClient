@@ -40,7 +40,7 @@ void Dialog::closeEvent(QCloseEvent *)
     if(start_Qthread && start_Qthread2)
     {
          thVideo->exit(0); thVideo2->exit(0);
-         while(!thVideo->isFinished() && !thVideo2->isFinished()) {}
+         while(!thVideo->isFinished() && !thVideo2->isFinished()) {} // ждем пока потоки закончат свое выполнение
     }
     start_Qthread = false;
     start_Qthread2 = false;
@@ -58,17 +58,17 @@ void Dialog::startVideoThread()
     vidManagerCreator2 = new VideoManagegCreator(2);
     vidManagerCreator2->moveToThread(thVideo2);
 
-    thVideo->start();
+    thVideo->start(); // camera 1
     start_Qthread = true;
 
-    thVideo2->start();
+    thVideo2->start(); //camera 2
     start_Qthread2 = true;
 
-    QObject::connect(thVideo, SIGNAL(started()), vidManagerCreator, SLOT(create()));
+    QObject::connect(thVideo, SIGNAL(started()), vidManagerCreator, SLOT(create())); // camera 1
     QObject::connect(thVideo, SIGNAL(finished()), vidManagerCreator, SLOT(deleteLater()));
     QObject::connect(vidManagerCreator,SIGNAL(sendFrame(QImage)),this,SLOT(onFrame(QImage)));
 
-    QObject::connect(thVideo2, SIGNAL(started()), vidManagerCreator2, SLOT(create()));
+    QObject::connect(thVideo2, SIGNAL(started()), vidManagerCreator2, SLOT(create())); //camera 2
     QObject::connect(thVideo2, SIGNAL(finished()), vidManagerCreator2, SLOT(deleteLater()));
     QObject::connect(vidManagerCreator2,SIGNAL(sendFrame(QImage)),this, SLOT(onFrame2(QImage)));
 }
