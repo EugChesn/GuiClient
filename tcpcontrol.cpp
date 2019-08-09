@@ -76,14 +76,27 @@ void TcpControl::sendCommand(/*double axisLeftX, double axisLeftY, double axisRi
     QVariant tmp_data = command.toUtf8();
     stream << (tmp_data);
     socket->write(data);*/
+
+
     QString command = "MOVE=lx:" + QString::number((axisLeftX)) + ",ly:" + QString::number((axisLeftY)) + ",rx:" + QString::number((axisRightX)) + ",ry:" + QString::number((axisRightY)) + ";";
-    QTextStream stream_str(socket);
-    stream_str << command.toUtf8();
+    QByteArray arrBlock;
+    QDataStream out(&arrBlock, QIODevice::WriteOnly);
+    out << quint32(0) << command;
+    out.device()->seek(0);
+    out << quint32(arrBlock.size() - sizeof(quint32));
+    socket->write(arrBlock);
+
+    socket->flush();
+
+
+    //QString command = "MOVE=lx:" + QString::number((axisLeftX)) + ",ly:" + QString::number((axisLeftY)) + ",rx:" + QString::number((axisRightX)) + ",ry:" + QString::number((axisRightY)) + ";";
+    //QTextStream stream_str(socket);
+    //stream_str << command.toUtf8();
 }
 
 TcpControl::TcpControl(QObject *parent) : QObject(parent)
 {
-    m_nNextBlockSize = 0;
+    _nextBlockSize = 0;
     //server = new QTcpServer(this);
     socket = new QTcpSocket(this);
     QString log = " Socket init";
@@ -146,8 +159,27 @@ TcpControl::~TcpControl() {
 
 void TcpControl::readyRead()
 {
-    QByteArray data = socket->readAll();
-    QString commandServer = data;
+    //QByteArray data = socket->readAll();
+    //QString commandServer = data;
+
+    QDataStream in(socket);
+    QString commandServer;
+    for (;;)
+    {
+        if (!_nextBlockSize)
+        {
+            if (socket->bytesAvailable() < sizeof(quint32))
+            { break; }
+
+            in >> _nextBlockSize;
+        }
+        if (socket->bytesAvailable() < _nextBlockSize)
+        { break; }
+
+        in >> commandServer;
+
+        _nextBlockSize = 0;
+    }
     qDebug() << "SERVER SEND:" << commandServer;
     commandServer = commandServer.split(";").at(0);
     if(commandServer.contains("POS=")) {

@@ -53,7 +53,7 @@ private:
     quint16 portConrol = 7676;
     int controlMS = 250;
 
-    QString ipCamera1 = "192.168.1.13";
+    /*QString ipCamera1 = "192.168.1.13";
     quint16 portCamera1 = 554;
     QString loginIpCamera1 = "admin";
     QString passwordIpCamera1 = "123456";
@@ -61,9 +61,19 @@ private:
     QString ipCamera2 = "192.168.1.13";
     quint16 portCamera2 = 554;
     QString loginIpCamera2 = "admin";
-    QString passwordIpCamera2 = "123456";
+    QString passwordIpCamera2 = "123456";*/
 
-    int frameMS = 100;
+    QString ipCamera1 = "192.168.1.64";
+    quint16 portCamera1 = 554;
+    QString loginIpCamera1 = "admin";
+    QString passwordIpCamera1 = "qwerty123";
+
+    QString ipCamera2 = "192.168.1.64";
+    quint16 portCamera2 = 554;
+    QString loginIpCamera2 = "admin";
+    QString passwordIpCamera2 = "qwerty123";
+
+    int frameMS = 50;
     int pingMS = 2000;
 
 

@@ -57,7 +57,7 @@ public slots:
 
 private:
     QTcpSocket *socket;
-    quint16     m_nNextBlockSize;
+    quint32     _nextBlockSize;
 
     //constructor
     static TcpControl *instance;

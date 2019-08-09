@@ -17,17 +17,19 @@ void VideoManager::handleFrame()
 {
     cv::Mat original;
     vc.read(original);
-    qDebug()<<"start read frame";
+    //qDebug()<<"start read frame";
     if(original.empty() == true) return;
 
-    QImage  * qimgOriginal = new QImage(original.data, original.cols, original.rows, QImage::Format_RGB888);
+    //QImage  * qimgOriginal = new QImage(original.data, original.cols, original.rows, QImage::Format_RGB888);
+     QImage fr(original.data, original.cols, original.rows, QImage::Format_RGB888);
     //qimgOriginal->rgbSwapped();
 
 
-    qDebug()<<"qimg frame";
+    //qDebug()<<"qimg frame";
     //qDebug()<< QThread::currentThreadId();
 
-    emit frameReady(qimgOriginal->copy());
+    //emit frameReady(qimgOriginal->copy());
+     emit frameReady(fr.copy());
 }
 
 void VideoManager::start() //Настройки зависит от номера камеры (нужно при запуске передать)
