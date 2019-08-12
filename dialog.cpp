@@ -58,12 +58,6 @@ void Dialog::startVideoThread()
     vidManagerCreator2 = new VideoManagegCreator(2);
     vidManagerCreator2->moveToThread(thVideo2);
 
-    thVideo->start(); // camera 1
-    start_Qthread = true;
-
-    thVideo2->start(); //camera 2
-    start_Qthread2 = true;
-
     QObject::connect(thVideo, SIGNAL(started()), vidManagerCreator, SLOT(create())); // camera 1
     QObject::connect(thVideo, SIGNAL(finished()), vidManagerCreator, SLOT(deleteLater()));
     QObject::connect(vidManagerCreator,SIGNAL(sendFrame(QImage)),this,SLOT(onFrame(QImage)));
@@ -71,6 +65,12 @@ void Dialog::startVideoThread()
     QObject::connect(thVideo2, SIGNAL(started()), vidManagerCreator2, SLOT(create())); //camera 2
     QObject::connect(thVideo2, SIGNAL(finished()), vidManagerCreator2, SLOT(deleteLater()));
     QObject::connect(vidManagerCreator2,SIGNAL(sendFrame(QImage)),this, SLOT(onFrame2(QImage)));
+
+    thVideo->start(); // camera 1
+    start_Qthread = true;
+
+    thVideo2->start(); //camera 2
+    start_Qthread2 = true;
 }
 
 void Dialog::stopVideoThread()

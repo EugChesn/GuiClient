@@ -294,9 +294,12 @@ void TcpControl::sendCommandUsingTimer()
     if(timer != nullptr)
         timer = new QTimer(this);
     if(!timer->isActive()) {
+        qDebug() << disconnect;
         if(!disconnect)
+        {
             connect(timer, SIGNAL(timeout()), this, SLOT(sendCommand()));
-        timer->start(SettingConst::getInstance()->getControlMS());
+            timer->start(SettingConst::getInstance()->getControlMS()); // not if
+        }
     }
 }
 

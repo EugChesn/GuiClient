@@ -17,7 +17,7 @@ QString SettingConst::getAllToString()
     QStringList strList;
     strList.append("ipConrol:" + ipConrol);
     strList.append("portConrol:" + QString::number(portConrol));
-    strList.append("controlMS:" + QString::number(controlMS));
+    //strList.append("controlMS:" + QString::number(controlMS));
     strList.append("ipCamera1:" + ipCamera1);
     strList.append("portCamera1:" + QString::number(portCamera1));
     strList.append("loginIpCamera1:" + loginIpCamera1);

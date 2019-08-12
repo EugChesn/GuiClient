@@ -32,14 +32,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
 }
 
-MainWindow::~MainWindow()
+/*MainWindow::~MainWindow()
 {
-    delete tcpControl;
-    delete gamepad;
-    delete timer;
-    delete this->mrVisual;
+    //delete tcpControl;
+    //delete gamepad;
+    //delete timer;
+    //delete this->mrVisual;
     delete ui;
-}
+}*/
 
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
@@ -47,7 +47,10 @@ void MainWindow::resizeEvent(QResizeEvent *event)
     int height = event->size().height();
 }
 
-
+/*void MainWindow::closeEvent(QCloseEvent *event)
+{
+    qDebug()<<"closeEvent";
+}*/
 void MainWindow::appendText(QString text)
 {
     QTime currTime = QTime::currentTime();
@@ -60,8 +63,11 @@ void MainWindow::appendText(QString text)
 void MainWindow::on_pushButton_clicked()
 {
     startServer();
+    qDebug()<<"Start server complete";
     startGamepad();
+    qDebug()<<"Start gamepad complete";
     startMRVisual();
+    qDebug()<<"Start VisualLib complete";
     startGaz();
     startBatteryServer();
     startBatteryCamera1();
@@ -96,18 +102,18 @@ void MainWindow::on_setings_clicked()
     Settings *dialogSettings = new Settings(this);
     dialogSettings->show();
     if (dialogSettings->exec() == QDialog::Accepted) {
-        disconnect(pingServer, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_server()) );
-        disconnect(pingServer,SIGNAL(finished(int)),pingServer,SLOT(kill()));
-        disconnect(pingCamera1, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_camera1()) );
-        disconnect(pingCamera1,SIGNAL(finished(int)),pingCamera1,SLOT(kill()));
-        disconnect(pingCamera2, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_camera2()) );
-        disconnect(pingCamera2,SIGNAL(finished(int)),pingCamera2,SLOT(kill()));
-        disconnect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_server()));
-        disconnect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_camera1()));
-        disconnect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_camera2()));
+        //disconnect(pingServer, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_server()) );
+        //disconnect(pingServer,SIGNAL(finished(int)),pingServer,SLOT(kill()));
+        //disconnect(pingCamera1, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_camera1()) );
+        //disconnect(pingCamera1,SIGNAL(finished(int)),pingCamera1,SLOT(kill()));
+        //disconnect(pingCamera2, SIGNAL(readyReadStandardOutput ()), this, SLOT(print_ping_camera2()) );
+        //disconnect(pingCamera2,SIGNAL(finished(int)),pingCamera2,SLOT(kill()));
+        //disconnect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_server()));
+        //disconnect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_camera1()));
+        //disconnect(timer,SIGNAL(timeout()),this,SLOT(ping_timer_camera2()));
 
 
-        startPing();
+        //startPing();
 
         QMessageBox msgBox;
         msgBox.setWindowTitle("Внимание!");
