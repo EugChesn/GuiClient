@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //qDebug() << QThread::currentThreadId();
     paintStick();
 
     QGamepadManager * gamepadManager =  QGamepadManager::instance();
@@ -72,6 +73,8 @@ void MainWindow::on_pushButton_clicked()
     startBatteryServer();
     startBatteryCamera1();
     startBatteryCamera2();
+
+    tcpControl->sendCommandUsingTimer();
 }
 
 void MainWindow::on_stop_clicked()
@@ -150,7 +153,7 @@ void MainWindow::startServer()
             connect(tcpControl, SIGNAL(getState(bool)), this, SLOT(onChangeStateServer(bool)));
             isTcpControlConnectedSignal = true;
             onChangeStateServer(true);
-            tcpControl->sendCommandUsingTimer();
+            //tcpControl->sendCommandUsingTimer();
         }
     }
 }
@@ -337,6 +340,7 @@ void MainWindow::stopGaz()
 
 void MainWindow::handleGaz(int g1, int g2, int g3, int g4)
 {
+    //qDebug()<< g1 << g2 << g3 << g4;
     ui->lcdGaz1->display(QString::number(g1) + "%");
     ui->lcdGaz2->display(QString::number(g2) + "%");
     ui->lcdGaz3->display(QString::number(g3) + "%");

@@ -77,7 +77,7 @@ void TcpControl::sendCommand(/*double axisLeftX, double axisLeftY, double axisRi
     stream << (tmp_data);
     socket->write(data);*/
 
-
+    qDebug()<< "start send comand";
     QString command = "MOVE=lx:" + QString::number((axisLeftX)) + ",ly:" + QString::number((axisLeftY)) + ",rx:" + QString::number((axisRightX)) + ",ry:" + QString::number((axisRightY)) + ";";
     QByteArray arrBlock;
     QDataStream out(&arrBlock, QIODevice::WriteOnly);
@@ -100,6 +100,7 @@ TcpControl::TcpControl(QObject *parent) : QObject(parent)
     //server = new QTcpServer(this);
     socket = new QTcpSocket(this);
     QString log = " Socket init";
+    timer = nullptr;
 
     qDebug() << log;
     emit getLog(log);
@@ -180,7 +181,7 @@ void TcpControl::readyRead()
 
         _nextBlockSize = 0;
     }
-    qDebug() << "SERVER SEND:" << commandServer;
+    //qDebug() << "SERVER SEND:" << commandServer;
     commandServer = commandServer.split(";").at(0);
     if(commandServer.contains("POS=")) {
         int pos = 0;
@@ -207,8 +208,8 @@ void TcpControl::readyRead()
         int g2 = !line.at(1).isNull()? line.at(1).toInt() > 0? line.at(1).toInt() : 0 : 0;
         int g3 = !line.at(2).isNull()? line.at(2).toInt() > 0? line.at(2).toInt() : 0 : 0;
         int g4 = !line.at(3).isNull()? line.at(3).toInt() > 0? line.at(3).toInt() : 0 : 0;
-        qDebug() << commandServer;
-        qDebug() << line;
+        //qDebug() << commandServer;
+        //qDebug() << line;
         emit getGaz(g1,g2,g3,g4);
     }
     if(commandServer.contains("BAT=")) {
@@ -222,8 +223,8 @@ void TcpControl::readyRead()
         int bs = !line.at(0).isNull()? line.at(0).toInt() > 0? line.at(0).toInt() : 0 : 0;
         int bc1 = !line.at(1).isNull()? line.at(1).toInt() > 0? line.at(1).toInt() : 0 : 0;
         int bc2 = !line.at(2).isNull()? line.at(2).toInt() > 0? line.at(2).toInt() : 0 : 0;
-        qDebug() << commandServer;
-        qDebug() << line;
+        //qDebug() << commandServer;
+        //qDebug() << line;
         emit getBattaryServer(bs);
         emit getBattaryCamera1(bc1);
         emit getBattaryCamera2(bc2);
@@ -286,12 +287,9 @@ void TcpControl::hostFound()
 {
 
 }
-
-
-
 void TcpControl::sendCommandUsingTimer()
 {
-    if(timer != nullptr)
+    if(timer == nullptr)
         timer = new QTimer(this);
     if(!timer->isActive()) {
         qDebug() << disconnect;

@@ -22,6 +22,9 @@ signals:
 public slots:
     void create();
     void onFrame(QImage);
+
+public:
+    void stop();
 };
 
 #endif // VIDEOMANAGEGCREATOR_H

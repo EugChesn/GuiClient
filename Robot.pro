@@ -39,6 +39,7 @@ SOURCES += \
         settingconst.cpp \
         settings.cpp \
         tcpcontrol.cpp \
+        testguithread.cpp \
         videomanagegcreator.cpp \
         videomanager.cpp
 
@@ -48,6 +49,7 @@ HEADERS += \
         settingconst.h \
         settings.h \
         tcpcontrol.h \
+        testguithread.h \
         videomanagegcreator.h \
         videomanager.h
 

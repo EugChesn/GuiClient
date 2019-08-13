@@ -42,7 +42,13 @@ void VideoManagegCreator::create()
 
 void VideoManagegCreator::onFrame(QImage frame)
 {
+    //qDebug()<<"creator send";
     emit sendFrame(frame);
+}
+
+void VideoManagegCreator::stop()
+{
+    vidManager->stop();
 }
 VideoManagegCreator::~VideoManagegCreator()
 {

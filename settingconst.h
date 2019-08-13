@@ -73,7 +73,7 @@ private:
     QString loginIpCamera2 = "admin";
     QString passwordIpCamera2 = "qwerty123";
 
-    int frameMS = 15;
+    int frameMS = 50;
     int pingMS = 2000;
 
 
