@@ -15,6 +15,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->lcdNumber->setStyleSheet("background-color:grey;");
+    ui->lcdNumber_2->setStyleSheet("background-color:grey;");
+    ui->lcdNumber_3->setStyleSheet("background-color:grey;");
+    ui->lcdNumber_4->setStyleSheet("background-color:grey;");
+    ui->lcdNumber->setSegmentStyle(QLCDNumber::Flat);
+    ui->lcdNumber_2->setSegmentStyle(QLCDNumber::Flat);
+    ui->lcdNumber_3->setSegmentStyle(QLCDNumber::Flat);
+    ui->lcdNumber_4->setSegmentStyle(QLCDNumber::Flat);
 
     //qDebug() << QThread::currentThreadId();
     paintStick();
@@ -28,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     //START PING
-    //startPing();
+    startPing();
     //----------
 
 }
@@ -55,7 +63,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 void MainWindow::appendText(QString text)
 {
     QTime currTime = QTime::currentTime();
-    ui->plainTextEdit->appendPlainText("[" + currTime.toString("hh:mm:ss") + "]: " + text);
+    //ui->plainTextEdit->appendPlainText("[" + currTime.toString("hh:mm:ss") + "]: " + text);
 }
 
 
@@ -135,7 +143,7 @@ void MainWindow::onErrorTcpSocket(QString error)
         redText.append(error);
         redText.append("</span>");
         QTime currTime = QTime::currentTime();
-        ui->plainTextEdit->appendHtml("[" + currTime.toString("hh:mm:ss") + "]: " + redText);
+        //ui->plainTextEdit->appendHtml("[" + currTime.toString("hh:mm:ss") + "]: " + redText);
     }
     if(isTcpControlConnectedSignal || isGamepadConnectedSignal)
         QTimer::singleShot(250, this, SLOT(on_pushButton_clicked()));
@@ -293,8 +301,8 @@ void MainWindow::startMRVisual()
     if(!isMRVisualConnectedSignal) {
         mrVisual = new MRVisualLib(this);
         mrVisual->setGeometry(300,300,300,300);
-        connect(tcpControl, SIGNAL(getPositionInSpase(float,float,float)), this, SLOT(handlerMRVisual(float,float,float)));
-        ui->gridLayoutMRVisual->addWidget(mrVisual);
+        connect(tcpControl, SIGNAL(getPositionInSpase(int,int,int)), this, SLOT(handlerMRVisual(int,int,int)));
+        //ui->gridLayoutMRVisual->addWidget(mrVisual);
         isMRVisualConnectedSignal = true;
     }
 }
@@ -303,13 +311,13 @@ void MainWindow::stopMRVusual()
 {
     if(isMRVisualConnectedSignal) {
         mrVisual->deleteLater();
-        disconnect(tcpControl, SIGNAL(getPositionInSpase(float,float,float)), this, SLOT(handlerMRVisual(float,float,float)));
+        disconnect(tcpControl, SIGNAL(getPositionInSpase(int,int,int)), this, SLOT(handlerMRVisual(int,int,int)));
         isMRVisualConnectedSignal = false;
     }
 }
 
 
-void MainWindow::handlerMRVisual(float x, float y, float z)
+void MainWindow::handlerMRVisual(int x, int y, int z)
 {
     mrVisual->rotate(x,y,z);
 }
@@ -330,10 +338,11 @@ void MainWindow::stopGaz()
 {
     if(isGazConnectedSignal) {
         disconnect(tcpControl, SIGNAL(getGaz(int,int,int, int)), this, SLOT(handleGaz(int,int,int, int)));
-        ui->lcdGaz1->display(QString::number(0) + "%");
+        /*ui->lcdGaz1->display(QString::number(0) + "%");
         ui->lcdGaz2->display(QString::number(0) + "%");
         ui->lcdGaz3->display(QString::number(0) + "%");
-        ui->lcdGaz4->display(QString::number(0) + "%");
+        ui->lcdGaz4->display(QString::number(0) + "%");*/
+
         isGazConnectedSignal = false;
     }
 }
@@ -341,10 +350,23 @@ void MainWindow::stopGaz()
 void MainWindow::handleGaz(int g1, int g2, int g3, int g4)
 {
     //qDebug()<< g1 << g2 << g3 << g4;
-    ui->lcdGaz1->display(QString::number(g1) + "%");
-    ui->lcdGaz2->display(QString::number(g2) + "%");
-    ui->lcdGaz3->display(QString::number(g3) + "%");
-    ui->lcdGaz4->display(QString::number(g4) + "%");
+
+    ui->lcdNumber->display(QString::number(g1) + "%");
+    ui->lcdNumber_2->display(QString::number(g2) + "%");
+    ui->lcdNumber_3->display(QString::number(g3) + "%");
+    ui->lcdNumber_4->display(QString::number(g4) + "%");
+
+
+    ui->progressBarGaz1->setValue(g1);
+    ui->progressBarGaz2->setValue(g2);
+    ui->progressBarGaz3->setValue(g3);
+    ui->progressBarGaz4->setValue(g4);
+
+    /*ui->progressBarGaz1->repaint();
+    ui->progressBarGaz2->repaint();
+    ui->progressBarGaz3->repaint();
+    ui->progressBarGaz4->repaint();*/
+
 }
 //-------------------------------------------------
 

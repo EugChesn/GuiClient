@@ -51,7 +51,7 @@ public:
 private:
     QString ipConrol = "127.0.0.1";
     quint16 portConrol = 7676;
-    int controlMS = 250;
+    int controlMS = 1000;
 
     /*QString ipCamera1 = "192.168.1.13";
     quint16 portCamera1 = 554;

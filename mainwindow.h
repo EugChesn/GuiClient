@@ -69,7 +69,7 @@ private slots:
     //Battery
 
     //MRVisual
-    void handlerMRVisual(float x, float y, float z);
+    void handlerMRVisual(int x, int y, int z);
     //------------------------------
 
     //GAZ

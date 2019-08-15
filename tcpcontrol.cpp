@@ -160,8 +160,9 @@ TcpControl::~TcpControl() {
 
 void TcpControl::readyRead()
 {
-    //QByteArray data = socket->readAll();
-    //QString commandServer = data;
+    /*QByteArray data = socket->readAll();
+    QString commandServer = data;
+    qDebug() << commandServer;*/
 
     QDataStream in(socket);
     QString commandServer;
@@ -181,54 +182,63 @@ void TcpControl::readyRead()
 
         _nextBlockSize = 0;
     }
-    //qDebug() << "SERVER SEND:" << commandServer;
-    commandServer = commandServer.split(";").at(0);
-    if(commandServer.contains("POS=")) {
+    qDebug() << "SERVER SEND:" << commandServer;
+
+   QStringList commandsServerList = commandServer.split(";");
+    //QString commandServerPos = commandServer.split(";").at(0);
+    //QString commandServerGaz = commandServer.split(";").at(1);
+
+
+    //if(commandServer.contains("POS=")) {
         int pos = 0;
         QRegExp rx("((\\d{1,3}\\.\\d{1,3})|(\\d{1,3}))");
         QStringList line;
-        while ((pos = rx.indexIn(commandServer, pos)) != -1) {
+        while ((pos = rx.indexIn(commandsServerList.at(0), pos)) != -1) {
             line.append(rx.cap(1));
             pos += rx.matchedLength();
         }
-        float x = !line.at(0).isNull()? line.at(0).toFloat() > 0? line.at(0).toFloat() : 0 : 0;
-        float y = !line.at(1).isNull()? line.at(1).toFloat() > 0? line.at(1).toFloat() : 0 : 0;
-        float z = !line.at(2).isNull()? line.at(2).toFloat() > 0? line.at(2).toFloat() : 0 : 0;
+        //float x = !line.at(0).isNull()? line.at(0).toFloat() > 0? line.at(0).toFloat() : 0 : 0;
+        //float y = !line.at(1).isNull()? line.at(1).toFloat() > 0? line.at(1).toFloat() : 0 : 0;
+        //float z = !line.at(2).isNull()? line.at(2).toFloat() > 0? line.at(2).toFloat() : 0 : 0;
+        int x = !line.at(0).isNull()? line.at(0).toInt() > 0? line.at(0).toInt() : 0 : 0;
+        int y = !line.at(1).isNull()? line.at(1).toInt() > 0? line.at(1).toInt() : 0 : 0;
+        int z = !line.at(2).isNull()? line.at(2).toInt() > 0? line.at(2).toInt() : 0 : 0;
+
         emit getPositionInSpase(x,y,z);
-    }
-    if(commandServer.contains("GAZ=")) {
-        int pos = 0;
-        QRegExp rx("((\\d{1,3}))");
-        QStringList line;
-        while ((pos = rx.indexIn(commandServer, pos)) != -1) {
-            line.append(rx.cap(1));
-            pos += rx.matchedLength();
+    //}
+    //if(commandServer.contains("GAZ=")) {
+        int posGaz = 0;
+        QRegExp rxGaz("((\\d{1,3}))");
+        QStringList lineGaz;
+        while ((posGaz = rxGaz.indexIn(commandsServerList.at(1), posGaz)) != -1) {
+            lineGaz.append(rxGaz.cap(1));
+            posGaz += rxGaz.matchedLength();
         }
-        int g1 = !line.at(0).isNull()? line.at(0).toInt() > 0? line.at(0).toInt() : 0 : 0;
-        int g2 = !line.at(1).isNull()? line.at(1).toInt() > 0? line.at(1).toInt() : 0 : 0;
-        int g3 = !line.at(2).isNull()? line.at(2).toInt() > 0? line.at(2).toInt() : 0 : 0;
-        int g4 = !line.at(3).isNull()? line.at(3).toInt() > 0? line.at(3).toInt() : 0 : 0;
+        int g1 = !lineGaz.at(0).isNull()? lineGaz.at(0).toInt() > 0? lineGaz.at(0).toInt() : 0 : 0;
+        int g2 = !lineGaz.at(1).isNull()? lineGaz.at(1).toInt() > 0? lineGaz.at(1).toInt() : 0 : 0;
+        int g3 = !lineGaz.at(2).isNull()? lineGaz.at(2).toInt() > 0? lineGaz.at(2).toInt() : 0 : 0;
+        int g4 = !lineGaz.at(3).isNull()? lineGaz.at(3).toInt() > 0? lineGaz.at(3).toInt() : 0 : 0;
         //qDebug() << commandServer;
         //qDebug() << line;
         emit getGaz(g1,g2,g3,g4);
-    }
-    if(commandServer.contains("BAT=")) {
-        int pos = 0;
-        QRegExp rx("((\\d{1,3}))");
-        QStringList line;
-        while ((pos = rx.indexIn(commandServer, pos)) != -1) {
-            line.append(rx.cap(1));
-            pos += rx.matchedLength();
+    //}
+    //if(commandServer.contains("BAT=")) {
+        int posBat = 0;
+        QRegExp rxBat("((\\d{1,3}))");
+        QStringList lineBat;
+        while ((posBat = rxBat.indexIn(commandsServerList.at(2), posBat)) != -1) {
+            lineBat.append(rxBat.cap(1));
+            posBat += rxBat.matchedLength();
         }
-        int bs = !line.at(0).isNull()? line.at(0).toInt() > 0? line.at(0).toInt() : 0 : 0;
-        int bc1 = !line.at(1).isNull()? line.at(1).toInt() > 0? line.at(1).toInt() : 0 : 0;
-        int bc2 = !line.at(2).isNull()? line.at(2).toInt() > 0? line.at(2).toInt() : 0 : 0;
+        int bs = !lineBat.at(0).isNull()? lineBat.at(0).toInt() > 0? lineBat.at(0).toInt() : 0 : 0;
+        int bc1 = !lineBat.at(1).isNull()? lineBat.at(1).toInt() > 0? lineBat.at(1).toInt() : 0 : 0;
+        int bc2 = !lineBat.at(2).isNull()? lineBat.at(2).toInt() > 0? lineBat.at(2).toInt() : 0 : 0;
         //qDebug() << commandServer;
         //qDebug() << line;
         emit getBattaryServer(bs);
         emit getBattaryCamera1(bc1);
         emit getBattaryCamera2(bc2);
-    }
+    //}
     socket->flush();
 }
 

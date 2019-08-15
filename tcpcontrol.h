@@ -33,7 +33,7 @@ signals:
     void getLog(QString log);
     void getCommand(double axisLeftX = 0, double axisLeftY = 0, double axisRightX = 0, double axisRightY = 0);
     void getState(bool state);
-    void getPositionInSpase(float x, float y, float z);
+    void getPositionInSpase(int x, int y, int z);
     void getGaz(int g1, int g2, int g3, int g4);
     void getBattaryServer(int x);
     void getBattaryCamera1(int x);

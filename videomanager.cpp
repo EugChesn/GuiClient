@@ -24,7 +24,7 @@ void VideoManager::handleFrame()
     //qimgOriginal->rgbSwapped();
     QImage fr(original.data, original.cols, original.rows, QImage::Format_RGB888);
 
-    //qDebug()<< "frame send";
+    qDebug()<< "frame send";
 
     emit frameReady(fr.copy());
 }
