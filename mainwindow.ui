@@ -62,45 +62,12 @@
           <string>Газ№1</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QProgressBar" name="progressBarGaz1">
-         <property name="maximumSize">
-          <size>
-           <width>70</width>
-           <height>30</height>
-          </size>
-         </property>
-         <property name="value">
-          <number>0</number>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Газ№4</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QProgressBar" name="progressBarGaz4">
          <property name="maximumSize">
           <size>
            <width>70</width>
@@ -134,7 +101,7 @@
           <string>Газ№2</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -173,12 +140,45 @@
           <string>Газ№3</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignCenter</set>
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QProgressBar" name="progressBarGaz3">
+         <property name="maximumSize">
+          <size>
+           <width>70</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Газ№4</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QProgressBar" name="progressBarGaz4">
          <property name="maximumSize">
           <size>
            <width>70</width>
@@ -199,8 +199,8 @@
      <rect>
       <x>1300</x>
       <y>860</y>
-      <width>451</width>
-      <height>107</height>
+      <width>572</width>
+      <height>105</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -291,12 +291,21 @@
           </widget>
          </item>
          <item>
-          <widget class="QLCDNumber" name="lcdbatteryCamera1">
+          <widget class="QProgressBar" name="progressBarBatCam1">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="maximumSize">
             <size>
-             <width>50</width>
-             <height>16777215</height>
+             <width>70</width>
+             <height>30</height>
             </size>
+           </property>
+           <property name="value">
+            <number>0</number>
            </property>
           </widget>
          </item>
@@ -393,12 +402,15 @@
             </widget>
            </item>
            <item>
-            <widget class="QLCDNumber" name="lcdbatteryServer">
+            <widget class="QProgressBar" name="progressBarBatServer">
              <property name="maximumSize">
               <size>
-               <width>50</width>
-               <height>16777215</height>
+               <width>70</width>
+               <height>30</height>
               </size>
+             </property>
+             <property name="value">
+              <number>0</number>
              </property>
             </widget>
            </item>
@@ -492,12 +504,15 @@
           </widget>
          </item>
          <item>
-          <widget class="QLCDNumber" name="lcdbatteryCamera2">
+          <widget class="QProgressBar" name="progressBarBatCam2">
            <property name="maximumSize">
             <size>
-             <width>50</width>
-             <height>16777215</height>
+             <width>70</width>
+             <height>30</height>
             </size>
+           </property>
+           <property name="value">
+            <number>0</number>
            </property>
           </widget>
          </item>
@@ -590,34 +605,6 @@
        </property>
        <property name="text">
         <string>setings</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_3">
-       <property name="minimumSize">
-        <size>
-         <width>50</width>
-         <height>50</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>50</width>
-         <height>50</height>
-        </size>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="pixmap">
-        <pixmap resource="resurse.qrc">:/images/disconnect.png</pixmap>
-       </property>
-       <property name="scaledContents">
-        <bool>true</bool>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -721,61 +708,13 @@
      </item>
     </layout>
    </widget>
-   <widget class="QLCDNumber" name="lcdNumber">
-    <property name="geometry">
-     <rect>
-      <x>980</x>
-      <y>830</y>
-      <width>64</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Arial</family>
-     </font>
-    </property>
-    <property name="segmentStyle">
-     <enum>QLCDNumber::Filled</enum>
-    </property>
-   </widget>
-   <widget class="QLCDNumber" name="lcdNumber_2">
-    <property name="geometry">
-     <rect>
-      <x>1060</x>
-      <y>830</y>
-      <width>64</width>
-      <height>23</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLCDNumber" name="lcdNumber_3">
-    <property name="geometry">
-     <rect>
-      <x>1140</x>
-      <y>830</y>
-      <width>64</width>
-      <height>23</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLCDNumber" name="lcdNumber_4">
-    <property name="geometry">
-     <rect>
-      <x>1220</x>
-      <y>830</y>
-      <width>64</width>
-      <height>23</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
       <x>40</x>
       <y>290</y>
-      <width>901</width>
-      <height>501</height>
+      <width>902</width>
+      <height>502</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -836,6 +775,51 @@
       </widget>
      </item>
     </layout>
+   </widget>
+   <widget class="QWidget" name="gridLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>680</x>
+      <y>20</y>
+      <width>511</width>
+      <height>241</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayoutVisual"/>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>1560</x>
+      <y>810</y>
+      <width>50</width>
+      <height>50</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>50</width>
+      <height>50</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>50</width>
+      <height>50</height>
+     </size>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="resurse.qrc">:/images/disconnect.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

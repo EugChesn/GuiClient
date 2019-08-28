@@ -15,14 +15,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->lcdNumber->setStyleSheet("background-color:grey;");
+    /*ui->lcdNumber->setStyleSheet("background-color:grey;");
     ui->lcdNumber_2->setStyleSheet("background-color:grey;");
     ui->lcdNumber_3->setStyleSheet("background-color:grey;");
     ui->lcdNumber_4->setStyleSheet("background-color:grey;");
     ui->lcdNumber->setSegmentStyle(QLCDNumber::Flat);
     ui->lcdNumber_2->setSegmentStyle(QLCDNumber::Flat);
     ui->lcdNumber_3->setSegmentStyle(QLCDNumber::Flat);
-    ui->lcdNumber_4->setSegmentStyle(QLCDNumber::Flat);
+    ui->lcdNumber_4->setSegmentStyle(QLCDNumber::Flat);*/
 
     //qDebug() << QThread::currentThreadId();
     paintStick();
@@ -33,11 +33,11 @@ MainWindow::MainWindow(QWidget *parent) :
 //    installEventFilter(this);
 //    upKey = downKey = rightKey = leftKey = false;
 
-
-
     //START PING
-    //startPing();
+    startPing();
     //----------
+
+
 
 }
 
@@ -319,7 +319,8 @@ void MainWindow::startMRVisual()
         mrVisual = new MRVisualLib(this);
         mrVisual->setGeometry(300,300,300,300);
         connect(tcpControl, SIGNAL(getPositionInSpase(int,int,int)), this, SLOT(handlerMRVisual(int,int,int)));
-        //ui->gridLayoutMRVisual->addWidget(mrVisual);
+        ui->gridLayoutVisual->addWidget(mrVisual);
+
         isMRVisualConnectedSignal = true;
     }
 }
@@ -381,8 +382,6 @@ void MainWindow::handlerMRVisual(int x, int y, int z)
 {
     mrVisual->rotate(x,y,z);
 }
-
-
 //-------------------------------------------------------------------
 
 //GAZ-------------------------------------------------
@@ -411,10 +410,10 @@ void MainWindow::handleGaz(int g1, int g2, int g3, int g4)
 {
     //qDebug()<< g1 << g2 << g3 << g4;
 
-    ui->lcdNumber->display(QString::number(g1) + "%");
+    /*ui->lcdNumber->display(QString::number(g1) + "%");
     ui->lcdNumber_2->display(QString::number(g2) + "%");
     ui->lcdNumber_3->display(QString::number(g3) + "%");
-    ui->lcdNumber_4->display(QString::number(g4) + "%");
+    ui->lcdNumber_4->display(QString::number(g4) + "%");*/
 
 
     ui->progressBarGaz1->setValue(g1);
@@ -607,14 +606,17 @@ void MainWindow::stopBatteryCamera2()
 }
 
 void MainWindow::handlerBataryServer(int x) {
-    ui->lcdbatteryServer->display(x);
+    //ui->lcdbatteryServer->display(x);
+    ui->progressBarBatServer->setValue(x);
 }
 
 void MainWindow::handlerBataryCamera1(int x) {
-    ui->lcdbatteryCamera1->display(x);
+    //ui->lcdbatteryCamera1->display(x);
+    ui->progressBarBatCam1->setValue(x);
 }
 
 void MainWindow::handlerBataryCamera2(int x) {
-    ui->lcdbatteryCamera2->display(x);
+    //ui->lcdbatteryCamera2->display(x);
+    ui->progressBarBatCam2->setValue(x);
 }
 //--------------------------------------------------------------------------

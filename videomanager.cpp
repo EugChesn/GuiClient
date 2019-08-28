@@ -24,7 +24,7 @@ void VideoManager::handleFrame()
     //qimgOriginal->rgbSwapped();
     QImage fr(original.data, original.cols, original.rows, QImage::Format_RGB888);
 
-    qDebug()<< "frame send";
+    //qDebug()<< "frame send";
 
     emit frameReady(fr.copy());
 }
@@ -32,12 +32,13 @@ void VideoManager::handleFrame()
 void VideoManager::start() //Настройки зависит от номера камеры (нужно при запуске передать)
 {
     qDebug() <<"adress: "<< QString::fromStdString(adress);
-    vc.open(adress);
-    timerHandler->start();
+    if(vc.open(adress))
+        timerHandler->start();
 }
 void VideoManager::stop()
 {
-    timerHandler->stop();
+    if(timerHandler->isActive())
+        timerHandler->stop();
 }
 
 
