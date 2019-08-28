@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     //START PING
-    startPing();
+    //startPing();
     //----------
 
 }
@@ -50,11 +50,11 @@ MainWindow::MainWindow(QWidget *parent) :
     delete ui;
 }*/
 
-void MainWindow::resizeEvent(QResizeEvent *event)
+/*void MainWindow::resizeEvent(QResizeEvent *event)
 {
     int width = event->size().width();
     int height = event->size().height();
-}
+}*/
 
 /*void MainWindow::closeEvent(QCloseEvent *event)
 {
@@ -94,6 +94,23 @@ void MainWindow::on_stop_clicked()
     stopBatteryServer();
     stopBatteryCamera1();
     stopBatteryCamera2();
+
+    if(start_Qthread)
+    {
+        QObject::disconnect(thVideo, SIGNAL(started()), vidManagerCreator, SLOT(create())); // camera 1
+        QObject::disconnect(thVideo, SIGNAL(finished()), vidManagerCreator, SLOT(deleteLater()));
+        QObject::disconnect(vidManagerCreator,SIGNAL(sendFrame(QImage)),this,SLOT(onFrame(QImage)));
+        thVideo->exit(0);
+        start_Qthread = false;
+    }
+    if(start_Qthread2)
+    {
+        QObject::disconnect(thVideo2, SIGNAL(started()), vidManagerCreator2, SLOT(create())); // camera 2
+        QObject::disconnect(thVideo2, SIGNAL(finished()), vidManagerCreator2, SLOT(deleteLater()));
+        QObject::disconnect(vidManagerCreator2,SIGNAL(sendFrame(QImage)),this,SLOT(onFrame2(QImage)));
+        thVideo2->exit(0);
+        start_Qthread2 = false;
+    }
     appendText("Все отключенно!");
 }
 
@@ -103,9 +120,9 @@ void MainWindow::on_startCam_clicked()
     Dialog *mDialog = new Dialog(this);
     mDialog->moveToThread(start_dialog);*/
 
-    Dialog *mDialog = new Dialog(this);
-    mDialog->show();
-
+    /*Dialog *mDialog = new Dialog(this);
+    mDialog->show();*/
+    startCamera();
 }
 
 void MainWindow::on_setings_clicked()
@@ -314,6 +331,49 @@ void MainWindow::stopMRVusual()
         disconnect(tcpControl, SIGNAL(getPositionInSpase(int,int,int)), this, SLOT(handlerMRVisual(int,int,int)));
         isMRVisualConnectedSignal = false;
     }
+}
+
+void MainWindow::startCamera()
+{
+    //Camera 1
+    thVideo = new QThread;
+    vidManagerCreator = new VideoManagegCreator(1);
+    vidManagerCreator->moveToThread(thVideo);
+
+    QObject::connect(thVideo, SIGNAL(started()), vidManagerCreator, SLOT(create()));
+    QObject::connect(thVideo, SIGNAL(finished()), vidManagerCreator, SLOT(deleteLater()));
+    QObject::connect(vidManagerCreator,SIGNAL(sendFrame(QImage)),this,SLOT(onFrame(QImage)));
+
+    thVideo->start();
+    start_Qthread = true;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //Camera 2
+    thVideo2 = new QThread;
+    vidManagerCreator2 = new VideoManagegCreator(2);
+    vidManagerCreator2->moveToThread(thVideo);
+
+    QObject::connect(thVideo2, SIGNAL(started()), vidManagerCreator2, SLOT(create()));
+    QObject::connect(thVideo2, SIGNAL(finished()), vidManagerCreator2, SLOT(deleteLater()));
+    QObject::connect(vidManagerCreator2,SIGNAL(sendFrame(QImage)),this,SLOT(onFrame2(QImage)));
+
+    thVideo2->start();
+    start_Qthread2 = true;
+}
+
+void MainWindow::onFrame(QImage frame)
+{
+    int w = ui->lab_cam1->width();
+    int h = ui->lab_cam1->height();
+    ui->lab_cam1->setPixmap(QPixmap::fromImage(frame.rgbSwapped()).scaled(w,h,Qt::KeepAspectRatio));
+}
+
+void MainWindow::onFrame2(QImage frame)
+{
+    int w = ui->lab_cam2->width();
+    int h = ui->lab_cam2->height();
+    ui->lab_cam2->setPixmap(QPixmap::fromImage(frame.rgbSwapped()).scaled(w,h,Qt::KeepAspectRatio));
 }
 
 

@@ -7,7 +7,8 @@
 #include <QLabel>
 #include "mrvisuallib.h"
 
-#include "dialog.h"
+#include "videomanagegcreator.h"
+//#include "dialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -22,6 +23,7 @@ public:
     TcpControl *tcpControl;
     QGamepad *gamepad;
     MRVisualLib *mrVisual;
+
     //OpenCvCam *openCam;
 
 
@@ -45,10 +47,13 @@ private slots:
     void onErrorTcpSocket(QString string);
     //------------------------------------
 
+    // для камеры
+    void onFrame(QImage frame);
+    void onFrame2(QImage frame);
+
     //void errorReadCam();
     //void setPixmapOnLabel(QPixmap);
     //void on_btnCamera_clicked();
-
     void on_startCam_clicked();
 
 
@@ -80,7 +85,7 @@ protected:
 //    bool eventFilter(QObject *obj, QEvent *event);
 //    void updateKeys();
 
-    virtual void resizeEvent(QResizeEvent *event) override;
+    //virtual void resizeEvent(QResizeEvent *event) override;
     //void closeEvent (QCloseEvent *event) override;
 
 
@@ -103,6 +108,17 @@ private:
     void stopMRVusual();
     bool isMRVisualConnectedSignal = false;
     //---------------------------------------
+
+    //Camera
+    QThread *thVideo;
+    VideoManagegCreator * vidManagerCreator;
+    bool start_Qthread = false;
+
+    QThread *thVideo2;
+    VideoManagegCreator * vidManagerCreator2;
+    bool start_Qthread2 = false;
+    void startCamera();
+
 
     //Battery
     void startBatteryServer();
